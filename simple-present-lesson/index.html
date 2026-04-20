@@ -245,17 +245,21 @@ const QUESTIONS = [
 ];
 
 // SEÇÃO 4 — Verbos comuns
+// top:true = estão entre os verbos mais usados no inglês cotidiano
 const VERBS = [
-  { base:"work",  he:"works",  neg:"doesn't work",  pt:"trabalhar" },
-  { base:"study", he:"studies",neg:"doesn't study", pt:"estudar" },
-  { base:"live",  he:"lives",  neg:"doesn't live",  pt:"morar" },
-  { base:"eat",   he:"eats",   neg:"doesn't eat",   pt:"comer" },
-  { base:"play",  he:"plays",  neg:"doesn't play",  pt:"jogar/tocar" },
-  { base:"go",    he:"goes",   neg:"doesn't go",    pt:"ir" },
-  { base:"have",  he:"has",    neg:"doesn't have",  pt:"ter" },
-  { base:"like",  he:"likes",  neg:"doesn't like",  pt:"gostar" },
-  { base:"watch", he:"watches",neg:"doesn't watch", pt:"assistir" },
-  { base:"drive", he:"drives", neg:"doesn't drive", pt:"dirigir" },
+  { base:"work",  he:"works",   neg:"doesn't work",   pt:"trabalhar",  top:true  },
+  { base:"have",  he:"has",     neg:"doesn't have",   pt:"ter",        top:true  },
+  { base:"go",    he:"goes",    neg:"doesn't go",     pt:"ir",         top:true  },
+  { base:"like",  he:"likes",   neg:"doesn't like",   pt:"gostar",     top:true  },
+  { base:"know",  he:"knows",   neg:"doesn't know",   pt:"saber/conhecer", top:true },
+  { base:"think", he:"thinks",  neg:"doesn't think",  pt:"pensar/achar",   top:true },
+  { base:"want",  he:"wants",   neg:"doesn't want",   pt:"querer",     top:true  },
+  { base:"live",  he:"lives",   neg:"doesn't live",   pt:"morar",      top:false },
+  { base:"study", he:"studies", neg:"doesn't study",  pt:"estudar",    top:false },
+  { base:"eat",   he:"eats",    neg:"doesn't eat",    pt:"comer",      top:false },
+  { base:"play",  he:"plays",   neg:"doesn't play",   pt:"jogar/tocar",top:false },
+  { base:"watch", he:"watches", neg:"doesn't watch",  pt:"assistir",   top:false },
+  { base:"drive", he:"drives",  neg:"doesn't drive",  pt:"dirigir",    top:false },
 ];
 
 // SEÇÃO 5 — Quiz
@@ -401,6 +405,7 @@ const TABS = [
   { id:"verbs",     label:"📋 Verbos" },
   { id:"errors",    label:"🇧🇷 Erros comuns" },
   { id:"listening", label:"👂 Percepção" },
+  { id:"stories",   label:"📰 Contexto real" },
   { id:"quiz",      label:"✏️ Quiz" },
 ];
 
@@ -973,8 +978,20 @@ function VerbsTab({ playing, play }) {
             </thead>
             <tbody>
               {VERBS.map(v => (
-                <tr key={v.base}>
-                  <td style={{fontWeight:600, color:"var(--teal)"}}>{v.base}</td>
+                <tr key={v.base} style={{background: v.top ? "rgba(42,125,111,0.04)" : "inherit"}}>
+                  <td style={{fontWeight:600, color:"var(--teal)"}}>
+                    <span style={{display:"flex", alignItems:"center", gap:"0.4rem"}}>
+                      {v.base}
+                      {v.top && (
+                        <span style={{
+                          fontSize:"0.58rem", fontWeight:800, letterSpacing:"0.08em",
+                          textTransform:"uppercase", background:"var(--gold)",
+                          color:"#fff", borderRadius:4, padding:"0.1rem 0.35rem",
+                          lineHeight:1.4, whiteSpace:"nowrap"
+                        }}>top</span>
+                      )}
+                    </span>
+                  </td>
                   <td style={{fontWeight:600, color:"var(--gold)"}}>{v.he}</td>
                   <td style={{color:"var(--rose)", fontSize:"0.83rem"}}>{v.neg}</td>
                   <td style={{color:"var(--slate)", fontSize:"0.82rem"}}>{v.pt}</td>
@@ -983,6 +1000,16 @@ function VerbsTab({ playing, play }) {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* LEGEND */}
+      <div style={{display:"flex", alignItems:"center", gap:"0.5rem", fontSize:"0.78rem", color:"var(--slate)"}}>
+        <span style={{
+          fontSize:"0.58rem", fontWeight:800, letterSpacing:"0.08em",
+          textTransform:"uppercase", background:"var(--gold)",
+          color:"#fff", borderRadius:4, padding:"0.1rem 0.35rem"
+        }}>top</span>
+        <span>Entre os verbos mais usados no inglês do dia a dia — aprenda esses primeiro!</span>
       </div>
 
       <div>
@@ -1113,6 +1140,300 @@ function QuizTab() {
 }
 
 // ─────────────────────────────────────────────
+// STORIES TAB — real context paragraphs
+// ─────────────────────────────────────────────
+const STORIES = [
+  {
+    title: "Lucas's daily routine",
+    emoji: "👨‍💻",
+    level: "Beginner",
+    levelColor: "var(--teal)",
+    paragraphs: [
+      {
+        text: [
+          { word:"Lucas ", verb:false },
+          { word:"works ", verb:true },
+          { word:"at a tech company in São Paulo. Every morning, he ", verb:false },
+          { word:"wakes ", verb:true },
+          { word:"up at 7am and ", verb:false },
+          { word:"drinks ", verb:true },
+          { word:"coffee. He ", verb:false },
+          { word:"doesn't eat ", verb:true },
+          { word:"breakfast at home — he usually ", verb:false },
+          { word:"buys ", verb:true },
+          { word:"a sandwich near the office.", verb:false },
+        ]
+      },
+      {
+        text: [
+          { word:"At work, Lucas ", verb:false },
+          { word:"writes ", verb:true },
+          { word:"code and ", verb:false },
+          { word:"talks ", verb:true },
+          { word:"to clients online. He ", verb:false },
+          { word:"doesn't drive ", verb:true },
+          { word:"to work — he ", verb:false },
+          { word:"takes ", verb:true },
+          { word:"the metro. After work, he ", verb:false },
+          { word:"goes ", verb:true },
+          { word:"to the gym on Tuesdays and Thursdays.", verb:false },
+        ]
+      },
+      {
+        text: [
+          { word:"On weekends, Lucas ", verb:false },
+          { word:"plays ", verb:true },
+          { word:"video games with friends. He ", verb:false },
+          { word:"doesn't watch ", verb:true },
+          { word:"much TV, but he ", verb:false },
+          { word:"loves ", verb:true },
+          { word:"movies. He ", verb:false },
+          { word:"thinks ", verb:true },
+          { word:"life in São Paulo ", verb:false },
+          { word:"is ", verb:true },
+          { word:"busy, but he ", verb:false },
+          { word:"likes ", verb:true },
+          { word:"it.", verb:false },
+        ]
+      },
+    ],
+    questions: [
+      { q:"Where does Lucas work?",             a:"At a tech company in São Paulo." },
+      { q:"Does he eat breakfast at home?",     a:"No, he doesn't. He buys a sandwich near the office." },
+      { q:"How does he get to work?",           a:"He takes the metro." },
+      { q:"What does he do on weekends?",       a:"He plays video games and watches movies." },
+    ],
+    translation: "Lucas trabalha numa empresa de tecnologia em São Paulo. Todo dia de manhã, ele acorda às 7h e toma café. Ele não toma café da manhã em casa — geralmente compra um sanduíche perto do escritório. No trabalho, Lucas escreve código e fala com clientes online. Ele não vai de carro — pega o metrô. Depois do trabalho, vai à academia às terças e quintas. Nos fins de semana, joga videogame com amigos. Ele não assiste muita TV, mas adora filmes. Ele acha que a vida em São Paulo é agitada, mas gosta.",
+  },
+  {
+    title: "Ana's life in London",
+    emoji: "👩‍🏫",
+    level: "Intermediate",
+    levelColor: "var(--gold)",
+    paragraphs: [
+      {
+        text: [
+          { word:"Ana ", verb:false },
+          { word:"lives ", verb:true },
+          { word:"in London and ", verb:false },
+          { word:"teaches ", verb:true },
+          { word:"Portuguese at a language school. She ", verb:false },
+          { word:"doesn't speak ", verb:true },
+          { word:"English at home — her flatmate ", verb:false },
+          { word:"is ", verb:true },
+          { word:"also Brazilian.", verb:false },
+        ]
+      },
+      {
+        text: [
+          { word:"Ana ", verb:false },
+          { word:"starts ", verb:true },
+          { word:"work at 9am. She ", verb:false },
+          { word:"walks ", verb:true },
+          { word:"to school because she ", verb:false },
+          { word:"doesn't like ", verb:true },
+          { word:"the tube. After class, she ", verb:false },
+          { word:"goes ", verb:true },
+          { word:"to a café and ", verb:false },
+          { word:"reads ", verb:true },
+          { word:"or ", verb:false },
+          { word:"studies ", verb:true },
+          { word:"for her master's degree.", verb:false },
+        ]
+      },
+      {
+        text: [
+          { word:"She ", verb:false },
+          { word:"misses ", verb:true },
+          { word:"Brazil, but she ", verb:false },
+          { word:"knows ", verb:true },
+          { word:"this experience ", verb:false },
+          { word:"helps ", verb:true },
+          { word:"her career. She ", verb:false },
+          { word:"wants ", verb:true },
+          { word:"to go back one day, but for now she ", verb:false },
+          { word:"enjoys ", verb:true },
+          { word:"London.", verb:false },
+        ]
+      },
+    ],
+    questions: [
+      { q:"What does Ana do in London?",          a:"She teaches Portuguese at a language school." },
+      { q:"Why does she walk to school?",          a:"Because she doesn't like the tube." },
+      { q:"Does she speak English at home?",       a:"No, she doesn't. Her flatmate is also Brazilian." },
+      { q:"Does she want to stay in London forever?", a:"No, she wants to go back to Brazil one day." },
+    ],
+    translation: "Ana mora em Londres e ensina português numa escola de idiomas. Ela não fala inglês em casa — sua colega de apartamento também é brasileira. Ana começa a trabalhar às 9h. Ela vai a pé para a escola porque não gosta do metrô. Após a aula, vai a um café e lê ou estuda para o seu mestrado. Ela sente saudade do Brasil, mas sabe que essa experiência ajuda na carreira. Ela quer voltar um dia, mas por enquanto curte Londres.",
+  },
+];
+
+function HighlightedText({ segments }) {
+  return (
+    <span style={{lineHeight:1.9, fontSize:"0.95rem"}}>
+      {segments.map((seg, i) => (
+        seg.verb
+          ? <span key={i} style={{
+              background:"rgba(42,125,111,0.12)",
+              color:"var(--teal)", fontWeight:700,
+              borderRadius:4, padding:"0.05rem 0.15rem"
+            }}>{seg.word}</span>
+          : <span key={i}>{seg.word}</span>
+      ))}
+    </span>
+  );
+}
+
+function StoryCard({ story }) {
+  const [showTranslation, setShowTranslation] = useState(false);
+  const [openQ, setOpenQ] = useState(null);
+
+  return (
+    <div style={{
+      background:"#fff", border:"1.5px solid var(--line)",
+      borderRadius:16, overflow:"hidden"
+    }}>
+      {/* header */}
+      <div style={{
+        background:"var(--ink)", color:"#fff",
+        padding:"0.9rem 1.2rem",
+        display:"flex", alignItems:"center", gap:"0.8rem"
+      }}>
+        <span style={{fontSize:"1.8rem"}}>{story.emoji}</span>
+        <div style={{flex:1}}>
+          <p style={{fontFamily:"'Playfair Display',serif", fontWeight:700, fontSize:"1.05rem"}}>{story.title}</p>
+          <span style={{
+            fontSize:"0.65rem", fontWeight:700, letterSpacing:"0.1em",
+            textTransform:"uppercase", background:story.levelColor,
+            color:"#fff", borderRadius:4, padding:"0.1rem 0.45rem"
+          }}>{story.level}</span>
+        </div>
+      </div>
+
+      <div style={{padding:"1.2rem", display:"flex", flexDirection:"column", gap:"1rem"}}>
+
+        {/* legend */}
+        <div style={{display:"flex", alignItems:"center", gap:"0.5rem", fontSize:"0.75rem", color:"var(--slate)"}}>
+          <span style={{
+            background:"rgba(42,125,111,0.12)", color:"var(--teal)",
+            fontWeight:700, borderRadius:4, padding:"0.1rem 0.4rem"
+          }}>verbo</span>
+          <span>= verbos em Simple Present destacados</span>
+        </div>
+
+        {/* paragraphs */}
+        <div style={{display:"flex", flexDirection:"column", gap:"0.8rem"}}>
+          {story.paragraphs.map((p, i) => (
+            <p key={i} style={{
+              background:"var(--cream)", borderRadius:10,
+              padding:"0.8rem 1rem", lineHeight:1.9
+            }}>
+              <HighlightedText segments={p.text}/>
+            </p>
+          ))}
+        </div>
+
+        {/* translation toggle */}
+        <button
+          onClick={() => setShowTranslation(v => !v)}
+          style={{
+            background: showTranslation ? "var(--cream)" : "transparent",
+            border:"1.5px solid var(--line)", borderRadius:9,
+            padding:"0.55rem 0.9rem", cursor:"pointer",
+            fontFamily:"'DM Sans',sans-serif", fontSize:"0.82rem",
+            color:"var(--slate)", textAlign:"left", transition:"background .2s",
+            display:"flex", alignItems:"center", justifyContent:"space-between"
+          }}
+        >
+          <span>🇧🇷 {showTranslation ? "Ocultar tradução" : "Ver tradução"}</span>
+          <span style={{fontSize:"0.75rem", display:"inline-block", transform: showTranslation ? "rotate(180deg)" : "none"}}>▼</span>
+        </button>
+
+        {showTranslation && (
+          <div style={{
+            background:"var(--cream)", borderRadius:9,
+            padding:"0.8rem 1rem", fontSize:"0.83rem",
+            color:"var(--slate)", lineHeight:1.7,
+            borderLeft:"3px solid var(--gold)"
+          }} className="fade-up">
+            {story.translation}
+          </div>
+        )}
+
+        {/* comprehension questions */}
+        <div>
+          <p style={{
+            fontSize:"0.65rem", fontWeight:700, letterSpacing:"0.12em",
+            textTransform:"uppercase", color:"var(--gold)", marginBottom:"0.5rem"
+          }}>Comprehension questions</p>
+          <div style={{display:"flex", flexDirection:"column", gap:"0.4rem"}}>
+            {story.questions.map((item, i) => (
+              <div key={i} style={{
+                border:"1.5px solid var(--line)", borderRadius:10,
+                overflow:"hidden"
+              }}>
+                <button
+                  onClick={() => setOpenQ(openQ === i ? null : i)}
+                  style={{
+                    width:"100%", background: openQ===i ? "var(--ink)" : "#fff",
+                    color: openQ===i ? "#fff" : "var(--ink)",
+                    border:"none", padding:"0.65rem 0.9rem",
+                    fontFamily:"'DM Sans',sans-serif", fontSize:"0.85rem",
+                    fontWeight:600, textAlign:"left", cursor:"pointer",
+                    display:"flex", justifyContent:"space-between", alignItems:"center",
+                    transition:"all .2s"
+                  }}
+                >
+                  <span>{item.q}</span>
+                  <span style={{fontSize:"0.75rem", opacity:0.6, flexShrink:0, marginLeft:"0.5rem"}}>
+                    {openQ===i ? "▲" : "▼"}
+                  </span>
+                </button>
+                {openQ === i && (
+                  <div style={{
+                    background:"#edfaf6", padding:"0.6rem 0.9rem",
+                    fontSize:"0.85rem", color:"var(--teal)", fontWeight:600,
+                    borderTop:"1px solid var(--line)"
+                  }} className="fade-up">
+                    {item.a}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+function StoriesTab() {
+  return (
+    <div style={{display:"flex", flexDirection:"column", gap:"1.4rem"}}>
+
+      <div style={{
+        background:"linear-gradient(135deg, #f0f8ff, #f5fff8)",
+        border:"1.5px solid #c8e6f5", borderRadius:14,
+        padding:"1rem 1.2rem", display:"flex", gap:"0.8rem", alignItems:"flex-start"
+      }}>
+        <span style={{fontSize:"1.6rem", lineHeight:1}}>📰</span>
+        <div>
+          <p style={{fontWeight:700, fontSize:"0.9rem", marginBottom:"0.25rem"}}>Contexto real</p>
+          <p style={{fontSize:"0.82rem", color:"var(--slate)", lineHeight:1.5}}>
+            Leia textos reais com o Simple Present em ação. Os verbos estão destacados para você identificar os padrões. Responda as perguntas de compreensão no final!
+          </p>
+        </div>
+      </div>
+
+      {STORIES.map((story, i) => (
+        <StoryCard key={i} story={story}/>
+      ))}
+
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
 // APP
 // ─────────────────────────────────────────────
 function App() {
@@ -1125,6 +1446,7 @@ function App() {
     verbs:     <VerbsTab     playing={playing} play={play}/>,
     errors:    <ErrorsTab/>,
     listening: <ListeningTab/>,
+    stories:   <StoriesTab/>,
     quiz:      <QuizTab/>,
   };
 

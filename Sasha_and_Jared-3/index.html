@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>English Practice: Sasha, Jared & Daniel</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- React & ReactDOM -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  
+  <!-- Babel -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans selection:bg-blue-200 min-h-screen pb-10">
+  
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // --- ÍCONES INLINE ---
+    const Icon = ({ children, size = 24, className = "" }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        {children}
+      </svg>
+    );
+    const Award = (p) => <Icon {...p}><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></Icon>;
+    const BookOpen = (p) => <Icon {...p}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></Icon>;
+    const ListChecks = (p) => <Icon {...p}><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></Icon>;
+    const PenTool = (p) => <Icon {...p}><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.586 7.586"/><circle cx="11" cy="11" r="2"/></Icon>;
+    const ArrowLeft = (p) => <Icon {...p}><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></Icon>;
+    const CheckCircle2 = (p) => <Icon {...p}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></Icon>;
+    const XCircle = (p) => <Icon {...p}><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></Icon>;
+    const RefreshCw = (p) => <Icon {...p}><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></Icon>;
+    const ChevronRight = (p) => <Icon {...p}><polyline points="9 18 15 12 9 6"/></Icon>;
+    const Send = (p) => <Icon {...p}><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></Icon>;
+    const MessageCircle = (p) => <Icon {...p}><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></Icon>;
+    const Copy = (p) => <Icon {...p}><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></Icon>;
+    const Volume2 = (p) => <Icon {...p}><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></Icon>;
+    const Loader = (p) => <Icon {...p}><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></Icon>;
+
+    const fallbackCopyTextToClipboard = (text) => {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.top = "0"; textArea.style.left = "0"; textArea.style.position = "fixed";
+      document.body.appendChild(textArea);
+      textArea.focus(); textArea.select();
+      try { document.execCommand('copy'); } catch (err) {}
+      document.body.removeChild(textArea);
+    };
+
+    // --- EFEITOS SONOROS (Web Audio API) ---
+    const getAudioCtx = () => {
+      if (!window._sfxCtx) window._sfxCtx = new (window.AudioContext || window.webkitAudioContext)();
+      return window._sfxCtx;
+    };
+
+    const playTone = (frequency, duration, type = 'sine', gainVal = 0.3, startTime = 0) => {
+      try {
+        const ctx = getAudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = type;
+        osc.frequency.setValueAtTime(frequency, ctx.currentTime + startTime);
+        gain.gain.setValueAtTime(gainVal, ctx.currentTime + startTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + startTime + duration);
+        osc.start(ctx.currentTime + startTime);
+        osc.stop(ctx.currentTime + startTime + duration);
+      } catch(e) {}
+    };
+
+    const sfx = {
+      correct: () => {
+        playTone(523, 0.12, 'sine', 0.3, 0);
+        playTone(659, 0.2,  'sine', 0.3, 0.1);
+      },
+      wrong: () => {
+        playTone(220, 0.08, 'sawtooth', 0.25, 0);
+        playTone(180, 0.18, 'sawtooth', 0.2,  0.08);
+      },
+      complete: () => {
+        playTone(523, 0.12, 'sine', 0.3, 0);
+        playTone(659, 0.12, 'sine', 0.3, 0.13);
+        playTone(784, 0.12, 'sine', 0.3, 0.26);
+        playTone(1047,0.3,  'sine', 0.3, 0.39);
+      },
+    };
+
+    // --- BASE URL DOS ÁUDIOS NO GITHUB PAGES ---
+    const BASE = "https://gfnvanimation-spec.github.io/english-practice/";
+    const audioUrl = (n) => `${BASE}Sasha%20e%20Jared%20(${n}).mp3`;
+
+    // --- ÁUDIOS DO SHADOWING (16 arquivos, em ordem das falas) ---
+    const AUDIO_CLIPS = [
+      { id: 1,  speaker: "Jared",                label: "Hello. It's Sasha, isn't it? I think we met at the programming conference in Mexico City.", src: audioUrl(1)  },
+      { id: 2,  speaker: "Sasha",                label: "Hi. Yes. I'm afraid I've forgotten your name.",                                              src: audioUrl(2)  },
+      { id: 3,  speaker: "Jared",                label: "It's Jared.",                                                                                 src: audioUrl(3)  },
+      { id: 4,  speaker: "Sasha",                label: "Oh, yes. Hello Jared. It's nice to see you again.",                                          src: audioUrl(4)  },
+      { id: 5,  speaker: "Sasha",                label: "I didn't know you worked in the Lima office.",                                                src: audioUrl(5)  },
+      { id: 6,  speaker: "Jared",                label: "Ah, I don't. I'm here to meet a client.",                                                    src: audioUrl(6)  },
+      { id: 7,  speaker: "Jared",                label: "Sasha, I don't think you've met Daniel. He works with me in Santiago.",                      src: audioUrl(7)  },
+      { id: 8,  speaker: "Sasha / Daniel",       label: "Nice to meet you, Daniel. / How do you do.",                                                 src: audioUrl(8)  },
+      { id: 9,  speaker: "Sasha",                label: "Are you both staying here for long? Maybe we could meet for a drink later.",                 src: audioUrl(9)  },
+      { id: 10, speaker: "Jared",                label: "Unfortunately not.",                                                                          src: audioUrl(10) },
+      { id: 11, speaker: "Jared",                label: "We're flying straight back after our meeting this afternoon.",                                src: audioUrl(11) },
+      { id: 12, speaker: "Daniel",               label: "It's a busy time at the moment with the launch of the new product range.",                   src: audioUrl(12) },
+      { id: 13, speaker: "Sasha",                label: "Yes, I know. It seems to be a big success.",                                                 src: audioUrl(13) },
+      { id: 14, speaker: "Sasha",                label: "Anyway, it's a shame we won't get a chance to talk a bit.",                                  src: audioUrl(14) },
+      { id: 15, speaker: "Sasha",                label: "Let me know when you're next visiting Lima, and I'll show you around our office here.",      src: audioUrl(15) },
+      { id: 16, speaker: "Jared / Sasha / Daniel", label: "Will do. Bye for now. / Bye. / Bye.",                                                      src: audioUrl(16) },
+    ];
+
+    // --- DIÁLOGO (para exibição na tela inicial) ---
+    const DIALOGUE = [
+      { speaker: "Jared", text: "Hello. It's Sasha, isn't it? I think we met at the programming conference in Mexico City." },
+      { speaker: "Sasha", text: "Hi! Yes. I'm afraid I've forgotten your name." },
+      { speaker: "Jared", text: "It's Jared." },
+      { speaker: "Sasha", text: "Oh, yes. Hello Jared. It's nice to see you again. I didn't know you worked in the Lima office." },
+      { speaker: "Jared", text: "Ah, I don't. I'm here to meet a client. Sasha, I don't think you've met Daniel. He works with me in Santiago." },
+      { speaker: "Sasha", text: "Nice to meet you, Daniel." },
+      { speaker: "Daniel", text: "How do you do?" },
+      { speaker: "Sasha", text: "Are you both staying here for long? Maybe we could meet for a drink later." },
+      { speaker: "Daniel", text: "Unfortunately not. We're flying straight back after our meeting this afternoon. It's a busy time at the moment with the launch of the new product range." },
+      { speaker: "Sasha", text: "Yes, I know. It seems to be a big success. Anyway, it's a shame we won't get a chance to talk a bit. Let me know when you're next visiting Lima, and I'll show you around our office here." },
+      { speaker: "Jared", text: "Will do. Bye for now." },
+      { speaker: "Sasha", text: "Bye." },
+      { speaker: "Daniel", text: "Bye." }
+    ];
+
+    const VOCAB_DATA = [
+      { id: 1, term: "Conference", def: "A formal meeting for discussion, typically taking place over several days." },
+      { id: 2, term: "Forgotten", def: "Failed to remember." },
+      { id: 3, term: "Client", def: "A person or organization using the services of a professional or company." },
+      { id: 4, term: "Launch", def: "To introduce a new product or service to the market." },
+      { id: 5, term: "Success", def: "The favorable or prosperous termination of attempts or endeavors." },
+      { id: 6, term: "Shame", def: "A regrettable or unfortunate situation." }
+    ];
+
+    // --- QUIZ: 5 VERSÕES ---
+    const ALL_QUIZ_VERSIONS = [
+      [ // Versão 1
+        { question: "Where did Jared and Sasha first meet?", options: ["At a programming conference in Mexico City", "At the Lima office", "At a party in Santiago", "In a meeting with a client"], correct: 0 },
+        { question: "Why is Jared in the Lima office?", options: ["To work there permanently", "To visit Sasha", "To meet a client", "To launch a new product range"], correct: 2 },
+        { question: "Why can't Jared and Daniel stay for a drink later?", options: ["They don't like drinking.", "They are flying straight back after their meeting.", "They have to meet another client.", "They are too tired from traveling."], correct: 1 },
+        { question: "What is the reason they are so busy at the moment?", options: ["They are planning a conference.", "They are opening a new office in Lima.", "They are looking for new clients.", "The launch of the new product range."], correct: 3 },
+      ],
+      [ // Versão 2
+        { question: "Where does Daniel work?", options: ["In the Lima office", "In Mexico City", "In Santiago", "In London"], correct: 2 },
+        { question: "What does Sasha say about the new product range?", options: ["It seems to be a big failure.", "It seems to be a big surprise.", "It seems to be a big success.", "It seems to be a big problem."], correct: 2 },
+        { question: "What does Sasha offer Jared and Daniel?", options: ["To drive them to the airport", "To show them around the Lima office", "To introduce them to a client", "To join them for a meeting"], correct: 1 },
+        { question: "How does Sasha feel about not being able to talk more?", options: ["Relieved", "Angry", "Indifferent", "It's a shame"], correct: 3 },
+      ],
+      [ // Versão 3
+        { question: "In which city does the conversation take place?", options: ["Santiago", "Mexico City", "London", "Lima"], correct: 3 },
+        { question: "Who introduces Daniel to Sasha?", options: ["Daniel introduces himself", "Jared introduces Daniel", "Sasha already knows Daniel", "A colleague introduces Daniel"], correct: 1 },
+        { question: "What kind of event did Jared and Sasha attend together in the past?", options: ["A product launch", "A sales meeting", "A programming conference", "A company dinner"], correct: 2 },
+        { question: "What does Jared say when leaving?", options: ["See you tomorrow!", "Take care!", "Will do. Bye for now.", "Thanks for everything!"], correct: 2 },
+      ],
+      [ // Versão 4
+        { question: "What did Sasha forget when she first saw Jared?", options: ["His phone number", "His name", "Where they met", "His job title"], correct: 1 },
+        { question: "Where are Jared and Daniel flying back to after their meeting?", options: ["Mexico City", "London", "Lima", "Santiago"], correct: 3 },
+        { question: "What is Jared's reason for being in Lima?", options: ["A team meeting", "A training session", "Meeting a client", "Visiting the new office"], correct: 2 },
+        { question: "Which word best describes the timing of Jared and Daniel's visit?", options: ["Relaxed", "Planned", "Busy", "Unexpected"], correct: 2 },
+      ],
+      [ // Versão 5
+        { question: "What is Sasha's reaction when she realizes who Jared is?", options: ["She is confused", "She remembers and greets him warmly", "She doesn't remember him at all", "She pretends not to know him"], correct: 1 },
+        { question: "How long are Jared and Daniel staying in Lima?", options: ["A few days", "One week", "Only for the afternoon", "Until the end of the month"], correct: 2 },
+        { question: "Which city was the conference where Jared and Sasha met?", options: ["Lima", "Santiago", "Buenos Aires", "Mexico City"], correct: 3 },
+        { question: "What does Sasha suggest they do later?", options: ["Have dinner together", "Meet for a drink", "Visit the office", "Attend the product launch"], correct: 1 },
+      ],
+    ];
+
+    // --- FILL IN THE BLANKS: 5 VERSÕES ---
+    const ALL_BLANKS_VERSIONS = [
+      [ // Versão 1
+        { text: "Unfortunately not. We're flying ", isBlank: false },
+        { text: "straight", isBlank: true, options: ["straight", "late", "often", "hard"] },
+        { text: " back after our meeting this ", isBlank: false },
+        { text: "afternoon", isBlank: true, options: ["afternoon", "morning", "night", "week"] },
+        { text: ". It's a busy time at the moment with the ", isBlank: false },
+        { text: "launch", isBlank: true, options: ["launch", "end", "start", "sale"] },
+        { text: " of the new product range. Yes, I know. It seems to be a big ", isBlank: false },
+        { text: "success", isBlank: true, options: ["success", "failure", "problem", "secret"] },
+        { text: ". Anyway, it's a ", isBlank: false },
+        { text: "shame", isBlank: true, options: ["shame", "joy", "relief", "wonder"] },
+        { text: " we won't get a chance to talk a bit.", isBlank: false },
+      ],
+      [ // Versão 2
+        { text: "Hello. It's Sasha, ", isBlank: false },
+        { text: "isn't", isBlank: true, options: ["isn't", "wasn't", "weren't", "hasn't"] },
+        { text: " it? I think we ", isBlank: false },
+        { text: "met", isBlank: true, options: ["met", "saw", "found", "visited"] },
+        { text: " at the programming ", isBlank: false },
+        { text: "conference", isBlank: true, options: ["conference", "concert", "competition", "office"] },
+        { text: " in Mexico City. Hi! Yes. I'm afraid I've ", isBlank: false },
+        { text: "forgotten", isBlank: true, options: ["forgotten", "remembered", "lost", "missed"] },
+        { text: " your ", isBlank: false },
+        { text: "name", isBlank: true, options: ["name", "face", "number", "email"] },
+        { text: ".", isBlank: false },
+      ],
+      [ // Versão 3
+        { text: "Ah, I ", isBlank: false },
+        { text: "don't", isBlank: true, options: ["don't", "can't", "won't", "didn't"] },
+        { text: ". I'm here to meet a ", isBlank: false },
+        { text: "client", isBlank: true, options: ["client", "friend", "manager", "partner"] },
+        { text: ". Sasha, I don't think you've ", isBlank: false },
+        { text: "met", isBlank: true, options: ["met", "seen", "heard", "called"] },
+        { text: " Daniel. He ", isBlank: false },
+        { text: "works", isBlank: true, options: ["works", "lives", "studies", "travels"] },
+        { text: " with me in ", isBlank: false },
+        { text: "Santiago", isBlank: true, options: ["Santiago", "Lima", "London", "Mexico"] },
+        { text: ".", isBlank: false },
+      ],
+      [ // Versão 4
+        { text: "Are you both ", isBlank: false },
+        { text: "staying", isBlank: true, options: ["staying", "working", "living", "traveling"] },
+        { text: " here for ", isBlank: false },
+        { text: "long", isBlank: true, options: ["long", "free", "good", "sure"] },
+        { text: "? Maybe we could ", isBlank: false },
+        { text: "meet", isBlank: true, options: ["meet", "talk", "work", "stay"] },
+        { text: " for a drink ", isBlank: false },
+        { text: "later", isBlank: true, options: ["later", "soon", "now", "early"] },
+        { text: ". Unfortunately not. We're flying straight ", isBlank: false },
+        { text: "back", isBlank: true, options: ["back", "away", "out", "home"] },
+        { text: " after our meeting this afternoon.", isBlank: false },
+      ],
+      [ // Versão 5
+        { text: "Yes, I ", isBlank: false },
+        { text: "know", isBlank: true, options: ["know", "think", "hope", "feel"] },
+        { text: ". It seems to be a big success. Anyway, it's a shame we won't get a ", isBlank: false },
+        { text: "chance", isBlank: true, options: ["chance", "time", "place", "reason"] },
+        { text: " to talk a bit. Let me ", isBlank: false },
+        { text: "know", isBlank: true, options: ["know", "see", "check", "tell"] },
+        { text: " when you're next ", isBlank: false },
+        { text: "visiting", isBlank: true, options: ["visiting", "leaving", "calling", "missing"] },
+        { text: " Lima, and I'll ", isBlank: false },
+        { text: "show", isBlank: true, options: ["show", "take", "bring", "send"] },
+        { text: " you around our office here.", isBlank: false },
+      ],
+    ];
+
+    // --- WRITING: 5 VERSÕES ---
+    const ALL_WRITING_VERSIONS = [
+      [ // Versão 1
+        { id: 1, question: "Where did Jared and Sasha first meet? What were they doing there?" },
+        { id: 2, question: "Why can't Jared and Daniel stay for a drink? What are they busy with?" },
+        { id: 3, question: "What does Sasha offer to do the next time Jared visits Lima?" },
+      ],
+      [ // Versão 2
+        { id: 1, question: "Who is Daniel and how does he know Jared?" },
+        { id: 2, question: "How does Sasha feel about the new product range? What does she say about it?" },
+        { id: 3, question: "Why does Sasha say 'it's a shame'? What situation is she referring to?" },
+      ],
+      [ // Versão 3
+        { id: 1, question: "Describe how Jared and Sasha recognize each other at the beginning of the conversation." },
+        { id: 2, question: "Where are Jared and Daniel going after their meeting in Lima? Why?" },
+        { id: 3, question: "In your opinion, do Jared and Sasha have a good professional relationship? Why?" },
+      ],
+      [ // Versão 4
+        { id: 1, question: "What does Sasha forget at the beginning of the conversation? How does she handle it?" },
+        { id: 2, question: "What does the expression 'flying straight back' tell us about Jared and Daniel's schedule?" },
+        { id: 3, question: "How would you describe the tone of this conversation — formal, informal, or both? Give an example." },
+      ],
+      [ // Versão 5
+        { id: 1, question: "What do we learn about Jared's work from this conversation?" },
+        { id: 2, question: "What social phrase does Jared use to end the conversation? What does it mean?" },
+        { id: 3, question: "Imagine you are Sasha. Write a short message to a colleague describing the encounter with Jared and Daniel." },
+      ],
+    ];
+
+    const pickRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+    // --- APP ---
+    // --- SISTEMA DE PROGRESSO ---
+    const PROGRESS_KEY = 'ep_sasha_jared_progress';
+    const ACTIVITIES = [
+      { key: 'vocab',      label: 'Vocabulary',         scored: true  },
+      { key: 'quiz',       label: 'Reading Quiz',        scored: true  },
+      { key: 'blanks',     label: 'Fill in the Blanks',  scored: true  },
+      { key: 'typeblanks', label: 'Type in the Blanks',  scored: true  },
+      { key: 'shadowing',  label: 'Shadowing',           scored: false },
+      { key: 'speaking',   label: 'Speaking',            scored: false },
+      { key: 'writing',    label: 'Writing',             scored: false },
+    ];
+
+    const loadProgress = () => {
+      try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {}; } catch { return {}; }
+    };
+    const saveProgress = (key, status) => {
+      // status: 'perfect' | 'partial' | 'done'
+      try {
+        const prev = loadProgress();
+        // só faz upgrade: done → partial → perfect
+        const rank = { perfect: 3, partial: 2, done: 1 };
+        if (!prev[key] || (rank[status] || 0) >= (rank[prev[key]] || 0)) {
+          localStorage.setItem(PROGRESS_KEY, JSON.stringify({ ...prev, [key]: status }));
+        }
+      } catch {}
+    };
+
+    function App() {
+      const [currentScreen, setCurrentScreen] = useState('home');
+      const [studentName, setStudentName] = useState('');
+      const [progress, setProgress] = useState(loadProgress);
+
+      const goHome = () => { setProgress(loadProgress()); setCurrentScreen('home'); };
+
+      const renderScreen = () => {
+        switch (currentScreen) {
+          case 'vocab':      return <VocabGame      goBack={goHome} studentName={studentName} saveProgress={saveProgress} />;
+          case 'quiz':       return <QuizGame        goBack={goHome} studentName={studentName} saveProgress={saveProgress} />;
+          case 'blanks':     return <BlanksGame      goBack={goHome} studentName={studentName} saveProgress={saveProgress} />;
+          case 'typeblanks': return <TypeBlanksGame  goBack={goHome} studentName={studentName} saveProgress={saveProgress} />;
+          case 'shadowing':  return <ShadowingGame   goBack={goHome} saveProgress={saveProgress} />;
+          case 'speaking':   return <SpeakingGame    goBack={goHome} saveProgress={saveProgress} />;
+          case 'writing':    return <WritingGame      goBack={goHome} studentName={studentName} saveProgress={saveProgress} />;
+          default:           return <HomeScreen setScreen={setCurrentScreen} studentName={studentName} setStudentName={setStudentName} progress={progress} setProgress={setProgress} />;
+        }
+      };
+
+      return (
+        <div>
+          <header className="bg-slate-900 text-white p-3 sm:p-4 shadow-md flex items-center justify-between sticky top-0 z-10">
+            <div className="flex items-center gap-2">
+              <Award className="text-blue-500 w-6 h-6 sm:w-8 sm:h-8" />
+              <h1 className="text-base sm:text-xl font-bold tracking-tight leading-tight">English Practice</h1>
+            </div>
+            <div className="text-right flex flex-col">
+              <span className="text-xs sm:text-sm font-semibold text-blue-300">Professora Janine Vasconcelos</span>
+              <span className="text-[10px] sm:text-xs text-slate-400 font-medium">Mod: Sasha, Jared & Daniel</span>
+            </div>
+          </header>
+          <main className="max-w-4xl mx-auto p-3 sm:p-4 md:p-6 lg:p-8">
+            {renderScreen()}
+          </main>
+        </div>
+      );
+    }
+
+    // --- HOME ---
+    function HomeScreen({ setScreen, studentName, setStudentName, progress, setProgress }) {
+      const statusColor = (s) => {
+        if (s === 'perfect') return 'bg-green-500';
+        if (s === 'partial') return 'bg-amber-400';
+        if (s === 'done')    return 'bg-green-500';
+        return 'bg-slate-200';
+      };
+      const statusLabel = (s) => {
+        if (s === 'perfect') return '✓ Perfeito!';
+        if (s === 'partial') return '~ Pode melhorar';
+        if (s === 'done')    return '✓ Concluído';
+        return 'Não feito';
+      };
+      const done = ACTIVITIES.filter(a => progress[a.key]).length;
+      const allPerfect = ACTIVITIES.every(a => progress[a.key] === 'perfect' || progress[a.key] === 'done');
+      const clearProgress = () => { localStorage.removeItem(PROGRESS_KEY); setProgress({}); };
+
+      return (
+        <div className="space-y-6 sm:space-y-8 animate-in duration-500">
+          <section className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6 flex flex-col md:flex-row gap-3 sm:gap-4 items-start md:items-center justify-between">
+            <div>
+              <h2 className="text-lg font-bold text-slate-800">Dados do Aluno</h2>
+              <p className="text-sm text-slate-500">Preencha seu nome para gerar os relatórios.</p>
+            </div>
+            <div className="w-full md:w-auto">
+              <input type="text" placeholder="Seu Nome Completo" value={studentName}
+                onChange={(e) => setStudentName(e.target.value)}
+                className="border border-slate-300 rounded-lg px-4 py-3 sm:py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none w-full sm:w-64 text-base"
+              />
+            </div>
+          </section>
+
+          <section className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-teal-600 p-3 sm:p-4 text-white">
+              <h2 className="text-base sm:text-lg font-semibold flex items-center gap-2">
+                <BookOpen size={20} /> Situation Briefing: Sasha, Jared & Daniel
+              </h2>
+              <p className="text-teal-100 text-xs sm:text-sm mt-1">Read the dialogue below before starting.</p>
+            </div>
+
+            {/* Player de áudio completo */}
+            <div className="bg-slate-50 border-b border-slate-200 p-3 sm:p-4 flex flex-col items-center gap-2">
+              <span className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                <Volume2 size={18} className="text-teal-600" /> Ouça o diálogo completo:
+              </span>
+              <audio controls className="w-full max-w-sm rounded-lg shadow-sm outline-none"
+                src="https://gfnvanimation-spec.github.io/english-practice/4-sasha%20e%20jared.mp3">
+                Seu navegador não suporta o elemento de áudio.
+              </audio>
+            </div>
+
+            <div className="p-3 sm:p-4 md:p-6 space-y-4">
+              {DIALOGUE.map((line, idx) => {
+                const isSasha = line.speaker === 'Sasha';
+                const isJared = line.speaker === 'Jared';
+                let speakerClass = 'bg-slate-100 text-slate-800 rounded-tl-none';
+                let alignment = 'items-start';
+                if (isSasha) { speakerClass = 'bg-teal-100 text-teal-900 rounded-tl-none'; alignment = 'items-start'; }
+                else if (isJared) { speakerClass = 'bg-blue-100 text-blue-900 rounded-tr-none'; alignment = 'items-end'; }
+                else { speakerClass = 'bg-amber-100 text-amber-900 rounded-tr-none'; alignment = 'items-end'; }
+                return (
+                  <div key={idx} className={`flex flex-col ${alignment}`}>
+                    <span className="text-[10px] sm:text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">{line.speaker}</span>
+                    <div className={`p-3 rounded-lg max-w-[90%] sm:max-w-[85%] shadow-sm text-sm sm:text-base ${speakerClass}`}>
+                      {line.text}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* --- PAINEL DE PROGRESSO --- */}
+          <section className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2">
+                  📊 Meu Progresso
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">{done} de {ACTIVITIES.length} atividades concluídas</p>
+              </div>
+              {done > 0 && (
+                <button onClick={clearProgress} className="text-xs text-slate-400 hover:text-red-400 transition underline underline-offset-2">
+                  Resetar
+                </button>
+              )}
+            </div>
+
+            {/* Barra geral */}
+            <div className="w-full bg-slate-100 rounded-full h-3 mb-5 overflow-hidden">
+              <div className={`h-3 rounded-full transition-all duration-700 ${allPerfect && done === ACTIVITIES.length ? 'bg-green-500' : 'bg-blue-500'}`}
+                style={{ width: `${(done / ACTIVITIES.length) * 100}%` }} />
+            </div>
+
+            {/* Barras individuais */}
+            <div className="space-y-2">
+              {ACTIVITIES.map(a => {
+                const s = progress[a.key];
+                return (
+                  <div key={a.key} className="flex items-center gap-3">
+                    <span className="text-xs text-slate-500 w-36 shrink-0 truncate">{a.label}</span>
+                    <div className="flex-1 bg-slate-100 rounded-full h-4 overflow-hidden">
+                      <div className={`h-4 rounded-full transition-all duration-500 flex items-center justify-end pr-2 ${statusColor(s)}`}
+                        style={{ width: s ? '100%' : '0%' }}>
+                        {s && <span className="text-[10px] text-white font-bold whitespace-nowrap">{statusLabel(s)}</span>}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {allPerfect && done === ACTIVITIES.length && (
+              <p className="text-center text-green-600 font-bold mt-4 text-sm animate-in fade-in">
+                🏆 Parabéns! Você completou todas as atividades!
+              </p>
+            )}
+          </section>
+
+          <section>
+            <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-slate-800">Interactive Training Exercises</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+              <button onClick={() => setScreen('vocab')} className="group flex flex-row md:flex-col items-center md:justify-center p-4 sm:p-6 bg-white rounded-xl shadow-sm border border-slate-200 hover:border-blue-500 hover:shadow-md transition-all text-left md:text-center gap-4 md:gap-0">
+                <div className="w-12 h-12 shrink-0 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center md:mb-4 group-hover:scale-110 transition-transform"><ListChecks size={24} /></div>
+                <div><h4 className="font-bold text-base sm:text-lg text-slate-800 mb-1">1. Vocabulary</h4><p className="text-xs sm:text-sm text-slate-500">Match terms to definitions.</p></div>
+              </button>
+              <button onClick={() => setScreen('quiz')} className="group flex flex-row md:flex-col items-center md:justify-center p-4 sm:p-6 bg-white rounded-xl shadow-sm border border-slate-200 hover:border-amber-500 hover:shadow-md transition-all text-left md:text-center gap-4 md:gap-0">
+                <div className="w-12 h-12 shrink-0 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center md:mb-4 group-hover:scale-110 transition-transform"><ListChecks size={24} /></div>
+                <div><h4 className="font-bold text-base sm:text-lg text-slate-800 mb-1">2. Reading Quiz</h4><p className="text-xs sm:text-sm text-slate-500">Test comprehension.</p></div>
+              </button>
+              <button onClick={() => setScreen('blanks')} className="group flex flex-row md:flex-col items-center md:justify-center p-4 sm:p-6 bg-white rounded-xl shadow-sm border border-slate-200 hover:border-teal-500 hover:shadow-md transition-all text-left md:text-center gap-4 md:gap-0">
+                <div className="w-12 h-12 shrink-0 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center md:mb-4 group-hover:scale-110 transition-transform"><PenTool size={24} /></div>
+                <div><h4 className="font-bold text-base sm:text-lg text-slate-800 mb-1">3. Fill in the Blanks</h4><p className="text-xs sm:text-sm text-slate-500">Choose the correct word.</p></div>
+              </button>
+              <button onClick={() => setScreen('typeblanks')} className="group flex flex-row md:flex-col items-center md:justify-center p-4 sm:p-6 bg-white rounded-xl shadow-sm border border-slate-200 hover:border-orange-500 hover:shadow-md transition-all text-left md:text-center gap-4 md:gap-0">
+                <div className="w-12 h-12 shrink-0 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center md:mb-4 group-hover:scale-110 transition-transform"><PenTool size={24} /></div>
+                <div><h4 className="font-bold text-base sm:text-lg text-slate-800 mb-1">4. Type in the Blanks</h4><p className="text-xs sm:text-sm text-slate-500">Type the missing words. ✍️</p></div>
+              </button>
+              <button onClick={() => setScreen('shadowing')} className="group flex flex-row md:flex-col items-center md:justify-center p-4 sm:p-6 bg-white rounded-xl shadow-sm border border-slate-200 hover:border-red-500 hover:shadow-md transition-all text-left md:text-center gap-4 md:gap-0">
+                <div className="w-12 h-12 shrink-0 bg-red-100 text-red-600 rounded-full flex items-center justify-center md:mb-4 group-hover:scale-110 transition-transform"><Volume2 size={24} /></div>
+                <div><h4 className="font-bold text-base sm:text-lg text-slate-800 mb-1">5. Shadowing Practice 🎧</h4><p className="text-xs sm:text-sm text-slate-500">Listen to real audio and repeat each line.</p></div>
+              </button>
+              <button onClick={() => setScreen('speaking')} className="group flex flex-row md:flex-col items-center md:justify-center p-4 sm:p-6 bg-white rounded-xl shadow-sm border border-slate-200 hover:border-pink-500 hover:shadow-md transition-all text-left md:text-center gap-4 md:gap-0">
+                <div className="w-12 h-12 shrink-0 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center md:mb-4 group-hover:scale-110 transition-transform"><MessageCircle size={24} /></div>
+                <div><h4 className="font-bold text-base sm:text-lg text-slate-800 mb-1">6. Speaking Practice 🎙️</h4><p className="text-xs sm:text-sm text-slate-500">Record your voice and compare with the original.</p></div>
+              </button>
+              <button onClick={() => setScreen('writing')} className="group sm:col-span-2 md:col-span-3 flex flex-row md:flex-col items-center md:justify-center p-4 sm:p-6 bg-white rounded-xl shadow-sm border border-slate-200 hover:border-purple-500 hover:shadow-md transition-all text-left md:text-center gap-4 md:gap-0">
+                <div className="w-12 h-12 shrink-0 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center md:mb-4 group-hover:scale-110 transition-transform"><Send size={24} /></div>
+                <div><h4 className="font-bold text-base sm:text-lg text-slate-800 mb-1">7. Writing Practice ✍️</h4><p className="text-xs sm:text-sm text-slate-500">Answer questions about the dialogue in your own words.</p></div>
+              </button>
+            </div>
+          </section>
+        </div>
+      );
+    }
+
+    // --- 1. VOCAB GAME ---
+    function VocabGame({ goBack, studentName, saveProgress }) {
+      const [selected, setSelected] = useState(null);
+      const [matched, setMatched] = useState({});
+      const [wrongPair, setWrongPair] = useState(null);
+      const [isCopied, setIsCopied] = useState(false);
+      const [errorMsg, setErrorMsg] = useState("");
+
+      const terms = VOCAB_DATA.map(v => ({ id: v.id, content: v.term, type: 'term' }));
+      const [defs] = useState(() => {
+        const shuffled = VOCAB_DATA.map(v => ({ id: v.id, content: v.def, type: 'def' }));
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+      });
+
+      const isComplete = Object.keys(matched).length === VOCAB_DATA.length;
+
+      const generateReport = () => {
+        const score = Object.keys(matched).length;
+        return `🎓 *Relatório: English Practice*\n👤 *Aluno:* ${studentName}\n📝 *Atividade:* Vocabulary Match\n✅ *Nota:* ${score}/${VOCAB_DATA.length} (${Math.round(score/VOCAB_DATA.length*100)}%)`;
+      };
+
+      const handleSelect = (item) => {
+        if (matched[item.id]) return;
+        if (!selected) { setSelected(item); return; }
+        if (selected.type === item.type) { setSelected(item); return; }
+        if (selected.id === item.id) {
+          const newMatched = { ...matched, [item.id]: true };
+          setMatched(newMatched);
+          setSelected(null); setWrongPair(null);
+          if (Object.keys(newMatched).length === VOCAB_DATA.length) { sfx.complete(); saveProgress('vocab', 'perfect'); }
+          else sfx.correct();
+        } else {
+          sfx.wrong();
+          setWrongPair([selected.id, item.id]);
+          setTimeout(() => { setWrongPair(null); setSelected(null); }, 800);
+        }
+      };
+
+      const getStyle = (item) => {
+        if (matched[item.id]) return 'bg-green-100 border-green-500 text-green-800 cursor-default opacity-70';
+        if (wrongPair && wrongPair.includes(item.id)) return 'bg-red-100 border-red-500 text-red-800 scale-95';
+        if (selected && selected.id === item.id && selected.type === item.type) return 'bg-blue-100 border-blue-500 text-blue-800 scale-105 shadow-md';
+        return 'bg-white border-slate-200 hover:border-blue-400 hover:shadow-sm active:scale-95 cursor-pointer';
+      };
+
+      return (
+        <div className="animate-in duration-300">
+          <button onClick={goBack} className="flex items-center gap-2 text-slate-500 hover:text-slate-800 mb-4 sm:mb-6 transition-colors font-medium">
+            <ArrowLeft size={18} /> Back to Menu
+          </button>
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6 md:p-8">
+            <h2 className="text-xl sm:text-2xl font-bold mb-2 flex items-center gap-2"><ListChecks className="text-blue-500" size={24}/> Vocabulary Match</h2>
+            <p className="text-sm sm:text-base text-slate-600 mb-6 sm:mb-8">Select a term and its matching definition.</p>
+            <div className="grid grid-cols-2 gap-x-4 sm:gap-x-8 gap-y-3">
+              <div className="space-y-3">
+                {terms.map(item => (
+                  <div key={item.id} onClick={() => handleSelect(item)}
+                    className={`p-3 rounded-lg border-2 transition-all text-sm sm:text-base font-semibold text-center ${getStyle(item)}`}>
+                    {matched[item.id] ? <CheckCircle2 className="inline mr-1 text-green-500" size={16}/> : null}{item.content}
+                  </div>
+                ))}
+              </div>
+              <div className="space-y-3">
+                {defs.map(item => (
+                  <div key={item.id} onClick={() => handleSelect(item)}
+                    className={`p-3 rounded-lg border-2 transition-all text-xs sm:text-sm ${getStyle(item)}`}>
+                    {item.content}
+                  </div>
+                ))}
+              </div>
+            </div>
+            {isComplete && (
+              <div className="mt-6 pt-6 border-t flex flex-col sm:flex-row items-center justify-between gap-4 animate-in fade-in">
+                <p className="text-green-600 font-bold text-lg flex items-center gap-2"><CheckCircle2 size={22}/> Perfect! All matched!</p>
+                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                  <button onClick={() => { if (!studentName) { setErrorMsg("Preencha seu nome!"); return; } fallbackCopyTextToClipboard(generateReport()); setIsCopied(true); setTimeout(() => setIsCopied(false), 2000); setErrorMsg(""); }}
+                    className="flex items-center justify-center gap-2 px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium">
+                    <Copy size={16}/> {isCopied ? 'Copiado!' : 'Copiar'}
+                  </button>
+                  <button onClick={() => { if (!studentName) { setErrorMsg("Preencha seu nome!"); return; } window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(generateReport())}`, '_blank'); setErrorMsg(""); }}
+                    className="flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium">
+                    <MessageCircle size={16}/> WhatsApp
+                  </button>
+                </div>
+                {errorMsg && <span className="text-red-500 text-xs font-medium">{errorMsg}</span>}
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    // --- 2. QUIZ GAME ---
+    function QuizGame({ goBack, studentName, saveProgress }) {
+      const [QUIZ_DATA] = useState(() => pickRandom(ALL_QUIZ_VERSIONS));
+      const [versionLabel] = useState(() => { const i = ALL_QUIZ_VERSIONS.indexOf(QUIZ_DATA) + 1; return `Round ${i}`; });
+      const [currentQ, setCurrentQ] = useState(0);
+      const [selectedAnswer, setSelectedAnswer] = useState(null);
+      const [isAnswered, setIsAnswered] = useState(false);
+      const [score, setScore] = useState(0);
+      const [finished, setFinished] = useState(false);
+      const [isCopied, setIsCopied] = useState(false);
+      const [errorMsg, setErrorMsg] = useState("");
+
+      const question = QUIZ_DATA[currentQ];
+
+      const generateReport = () =>
+        `🎓 *Relatório: English Practice*\n👤 *Aluno:* ${studentName}\n📝 *Atividade:* Reading Quiz (${versionLabel})\n✅ *Nota:* ${score}/${QUIZ_DATA.length} (${Math.round(score/QUIZ_DATA.length*100)}%)`;
+
+      const handleAnswer = (idx) => {
+        if (isAnswered) return;
+        setSelectedAnswer(idx); setIsAnswered(true);
+        if (idx === question.correct) { setScore(s => s + 1); sfx.correct(); }
+        else sfx.wrong();
+      };
+
+      const nextQuestion = () => {
+        if (currentQ < QUIZ_DATA.length - 1) { setCurrentQ(q => q+1); setSelectedAnswer(null); setIsAnswered(false); }
+        else {
+          setFinished(true); sfx.complete();
+          const finalScore = score + (QUIZ_DATA[currentQ] && selectedAnswer === QUIZ_DATA[currentQ].correct ? 1 : 0);
+          saveProgress('quiz', finalScore === QUIZ_DATA.length ? 'perfect' : 'partial');
+        }
+      };
+
+      return (
+        <div className="animate-in duration-300">
+          <button onClick={goBack} className="flex items-center gap-2 text-slate-500 hover:text-slate-800 mb-4 sm:mb-6 transition-colors font-medium">
+            <ArrowLeft size={18}/> Back to Menu
+          </button>
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6 md:p-8 max-w-2xl mx-auto">
+            {finished ? (
+              <div className="text-center py-8">
+                <Award className="mx-auto text-amber-400 mb-4" size={56}/>
+                <h2 className="text-2xl sm:text-3xl font-bold mb-2">Quiz Complete!</h2>
+                <p className="text-slate-600 mb-4">You scored <span className="font-bold text-blue-600 text-xl">{score} / {QUIZ_DATA.length}</span></p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center mt-6">
+                  <button onClick={() => { setCurrentQ(0); setScore(0); setFinished(false); setSelectedAnswer(null); setIsAnswered(false); }}
+                    className="flex items-center justify-center gap-2 px-4 py-3 sm:py-2 bg-amber-500 text-white rounded-lg font-medium">
+                    <RefreshCw size={18}/> Retry
+                  </button>
+                  <button onClick={goBack} className="flex items-center justify-center px-4 py-3 sm:py-2 border border-slate-300 rounded-lg font-medium">Finish</button>
+                  <button onClick={() => { if (!studentName) { setErrorMsg("Preencha seu nome!"); return; } fallbackCopyTextToClipboard(generateReport()); setIsCopied(true); setTimeout(() => setIsCopied(false), 2000); setErrorMsg(""); }}
+                    className="flex items-center justify-center gap-2 px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium">
+                    <Copy size={16}/> {isCopied ? 'Copiado!' : 'Copiar'}
+                  </button>
+                  <button onClick={() => { if (!studentName) { setErrorMsg("Preencha seu nome!"); return; } window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(generateReport())}`, '_blank'); setErrorMsg(""); }}
+                    className="flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium">
+                    <MessageCircle size={16}/> WhatsApp
+                  </button>
+                </div>
+                {errorMsg && <p className="text-red-500 text-sm mt-2">{errorMsg}</p>}
+              </div>
+            ) : (
+              <>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 sm:mb-8">
+                  <h2 className="text-lg sm:text-xl font-bold flex items-center gap-2"><ListChecks className="text-amber-500" size={24}/> Reading Quiz <span className="text-xs font-normal text-amber-500 bg-amber-50 px-2 py-0.5 rounded-full">{versionLabel}</span></h2>
+                  <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs sm:text-sm font-semibold self-start sm:self-auto">
+                    Question {currentQ + 1} of {QUIZ_DATA.length}
+                  </span>
+                </div>
+                <h3 className="text-lg sm:text-xl text-slate-800 font-medium mb-4 sm:mb-6 leading-snug">{question.question}</h3>
+                <div className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
+                  {question.options.map((opt, idx) => {
+                    let btnStyle = "bg-white border-slate-200 active:bg-slate-50";
+                    let icon = null;
+                    if (isAnswered) {
+                      if (idx === question.correct) { btnStyle = "bg-green-50 border-green-500 text-green-900"; icon = <CheckCircle2 className="text-green-500 shrink-0" size={20}/>; }
+                      else if (idx === selectedAnswer) { btnStyle = "bg-red-50 border-red-500 text-red-900"; icon = <XCircle className="text-red-500 shrink-0" size={20}/>; }
+                      else { btnStyle = "bg-slate-50 border-slate-200 opacity-50"; }
+                    }
+                    return (
+                      <button key={idx} onClick={() => handleAnswer(idx)} disabled={isAnswered}
+                        className={`w-full text-left p-3 sm:p-4 rounded-lg border transition-all flex items-center justify-between gap-3 text-sm sm:text-base ${btnStyle}`}>
+                        <span>{opt}</span>{icon}
+                      </button>
+                    );
+                  })}
+                </div>
+                {isAnswered && (
+                  <div className="flex justify-end animate-in fade-in">
+                    <button onClick={nextQuestion} className="w-full sm:w-auto flex items-center justify-center gap-2 bg-blue-600 text-white px-6 py-3 sm:py-2 rounded-lg font-medium">
+                      {currentQ < QUIZ_DATA.length - 1 ? 'Next Question' : 'See Results'} <ChevronRight size={18}/>
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    // --- 3. FILL IN THE BLANKS ---
+    function BlanksGame({ goBack, studentName, saveProgress }) {
+      const [BLANKS_DATA] = useState(() => pickRandom(ALL_BLANKS_VERSIONS));
+      const [versionLabel] = useState(() => { const i = ALL_BLANKS_VERSIONS.indexOf(BLANKS_DATA) + 1; return `Round ${i}`; });
+      const [answers, setAnswers] = useState({});
+      const [checked, setChecked] = useState(false);
+      const [score, setScore] = useState(0);
+      const [isCopied, setIsCopied] = useState(false);
+      const [errorMsg, setErrorMsg] = useState("");
+
+      const totalBlanks = BLANKS_DATA.filter(item => item.isBlank).length;
+
+      const generateReport = () => {
+        let text = `🎓 *Relatório: English Practice*\n👤 *Aluno:* ${studentName}\n📝 *Atividade:* Fill in the Blanks (${versionLabel})\n✅ *Nota:* ${score}/${totalBlanks}\n\n*Respostas do Aluno:*`;
+        let blankCount = 1;
+        BLANKS_DATA.forEach((item, index) => {
+          if (item.isBlank) {
+            const userAns = answers[index] || "Não respondido";
+            const isRight = userAns === item.text;
+            text += `\n${blankCount}️⃣ Lacuna ${blankCount}: ${userAns} ${isRight ? '✅' : '❌ (Correto: '+item.text+')'}`;
+            blankCount++;
+          }
+        });
+        return text;
+      };
+
+      const handleSelect = (index, value) => { setAnswers(prev => ({ ...prev, [index]: value })); setChecked(false); setIsCopied(false); setErrorMsg(""); };
+      const checkAnswers = () => {
+        let s = 0;
+        BLANKS_DATA.forEach((item, index) => { if (item.isBlank && answers[index] === item.text) s++; });
+        setScore(s); setChecked(true);
+        if (s === totalBlanks) { sfx.complete(); saveProgress('blanks', 'perfect'); }
+        else if (s > 0) { sfx.correct(); saveProgress('blanks', 'partial'); }
+        else { sfx.wrong(); saveProgress('blanks', 'partial'); }
+      };
+
+      return (
+        <div className="animate-in duration-300">
+          <button onClick={goBack} className="flex items-center gap-2 text-slate-500 hover:text-slate-800 mb-4 sm:mb-6 transition-colors font-medium">
+            <ArrowLeft size={18}/> Back to Menu
+          </button>
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6 md:p-8">
+            <h2 className="text-xl sm:text-2xl font-bold mb-2 flex items-center gap-2"><PenTool className="text-teal-500" size={24}/> Fill in the Blanks <span className="text-xs font-normal text-teal-500 bg-teal-50 px-2 py-0.5 rounded-full">{versionLabel}</span></h2>
+            <p className="text-sm sm:text-base text-slate-600 mb-6 sm:mb-8">Select the correct words to complete the sentences from the conversation.</p>
+            <div className="bg-slate-50 border border-slate-200 p-4 sm:p-6 rounded-lg text-base sm:text-lg leading-loose text-slate-800 mb-6 sm:mb-8 text-justify">
+              {BLANKS_DATA.map((item, index) => {
+                if (!item.isBlank) return <span key={index}>{item.text}</span>;
+                const isCorrect = checked && answers[index] === item.text;
+                const isWrong   = checked && answers[index] && answers[index] !== item.text;
+                return (
+                  <span key={index} className="inline-block mx-1 my-1">
+                    <select value={answers[index] || ""} onChange={(e) => handleSelect(index, e.target.value)}
+                      className={`px-2 py-1 bg-white border rounded-md font-semibold focus:outline-none focus:ring-2 focus:ring-teal-500 appearance-none text-center cursor-pointer text-sm sm:text-base min-w-[100px] sm:min-w-[120px]
+                        ${isCorrect ? 'border-green-500 text-green-700 bg-green-50' : isWrong ? 'border-red-500 text-red-700 bg-red-50' : 'border-slate-300 text-teal-700'}`}>
+                      <option value="" disabled>---</option>
+                      {item.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                    </select>
+                  </span>
+                );
+              })}
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-t pt-6 gap-4">
+              <div className="text-lg font-bold text-center sm:text-left">
+                {checked && <span className={score === totalBlanks ? "text-green-600" : "text-amber-600"}>Score: {score} / {totalBlanks}</span>}
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                <button onClick={() => { setAnswers({}); setChecked(false); setIsCopied(false); setErrorMsg(""); }}
+                  className="w-full sm:w-auto px-4 py-3 sm:py-2 text-slate-600 border border-slate-300 rounded-lg font-medium">Reset</button>
+                {!checked ? (
+                  <button onClick={checkAnswers} disabled={Object.keys(answers).length < totalBlanks}
+                    className="w-full sm:w-auto px-6 py-3 sm:py-2 bg-teal-600 text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed">Check Answers</button>
+                ) : (
+                  <div className="flex flex-col items-center sm:items-end gap-2 w-full sm:w-auto">
+                    <div className="flex flex-col sm:flex-row gap-2 w-full">
+                      <button onClick={() => { if (!studentName) { setErrorMsg("Preencha seu nome na tela inicial!"); return; } fallbackCopyTextToClipboard(generateReport()); setIsCopied(true); setTimeout(() => setIsCopied(false), 2000); setErrorMsg(""); }}
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-3 sm:py-2 bg-slate-800 text-white rounded-lg font-medium text-sm">
+                        <Copy size={16}/> {isCopied ? 'Copiado!' : 'Copiar'}
+                      </button>
+                      <button onClick={() => { if (!studentName) { setErrorMsg("Preencha seu nome na tela inicial!"); return; } window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(generateReport())}`, '_blank'); setErrorMsg(""); }}
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-3 sm:py-2 bg-green-600 text-white rounded-lg font-medium text-sm">
+                        <MessageCircle size={16}/> WhatsApp
+                      </button>
+                    </div>
+                    {errorMsg && <span className="text-red-500 text-xs sm:text-sm mt-1 font-medium">{errorMsg}</span>}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // --- 4. SHADOWING GAME COM ÁUDIO REAL ---
+    function ShadowingGame({ goBack, saveProgress }) {
+      const [currentIndex, setCurrentIndex] = useState(0);
+      const [step, setStep] = useState(1); // 1: ouvir, 2: ver texto, 3: avançar
+      const [audioState, setAudioState] = useState('idle'); // idle | loading | playing | error
+      const audioRef = useRef(null);
+
+      const clip = AUDIO_CLIPS[currentIndex];
+
+      // Reset ao trocar de fala
+      useEffect(() => {
+        setStep(1);
+        setAudioState('idle');
+        if (audioRef.current) {
+          audioRef.current.onerror = null;
+          audioRef.current.pause();
+          audioRef.current.src = '';
+        }
+      }, [currentIndex]);
+
+      const playAudio = (onEnded) => {
+        setAudioState('loading');
+        const audio = new Audio(clip.src);
+        audioRef.current = audio;
+
+        audio.oncanplaythrough = () => {
+          setAudioState('playing');
+          audio.play().catch(() => setAudioState('error'));
+        };
+        audio.onended = () => {
+          setAudioState('idle');
+          if (onEnded) onEnded();
+        };
+        audio.onerror = () => setAudioState('error');
+        audio.load();
+      };
+
+      const handleListen = () => {
+        if (audioState === 'playing' || audioState === 'loading') return;
+        if (audioRef.current) { audioRef.current.onerror = null; audioRef.current.pause(); audioRef.current.src = ''; }
+        playAudio(() => { if (step === 1) setStep(2); });
+      };
+
+      const handleSeeText = () => {
+        if (audioState === 'playing' || audioState === 'loading') return;
+        setStep(3);
+        if (audioRef.current) { audioRef.current.onerror = null; audioRef.current.pause(); audioRef.current.src = ''; }
+        playAudio(null);
+      };
+
+      const nextLine = () => {
+        if (currentIndex < AUDIO_CLIPS.length - 1) setCurrentIndex(i => i + 1);
+      };
+
+      const speakerColor = (speaker) => {
+        if (speaker.includes('Sasha')) return 'text-teal-600';
+        if (speaker.includes('Jared')) return 'text-blue-600';
+        return 'text-amber-600';
+      };
+
+      const isLoading = audioState === 'loading';
+      const isPlaying = audioState === 'playing';
+      const busy = isLoading || isPlaying;
+
+      return (
+        <div className="animate-in duration-300">
+          <button onClick={goBack} className="flex items-center gap-2 text-slate-500 hover:text-slate-800 mb-4 sm:mb-6 transition-colors font-medium">
+            <ArrowLeft size={18}/> Back to Menu
+          </button>
+
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6 md:p-8 max-w-2xl mx-auto flex flex-col items-center text-center">
+            <h2 className="text-xl sm:text-2xl font-bold mb-4 flex items-center gap-2">
+              <Volume2 className="text-red-500" size={24}/> Shadowing Practice
+            </h2>
+            <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs sm:text-sm font-semibold mb-8">
+              Fala {currentIndex + 1} de {AUDIO_CLIPS.length}
+            </span>
+
+            {/* Caixa de texto */}
+            <div className="min-h-[130px] flex flex-col items-center justify-center w-full bg-slate-50 rounded-lg p-6 mb-8 border border-slate-100">
+              {step >= 3 ? (
+                <>
+                  <span className={`font-bold text-sm uppercase tracking-wider mb-2 ${speakerColor(clip.speaker)}`}>{clip.speaker}</span>
+                  <p className="text-lg sm:text-xl font-medium text-slate-800">{clip.label}</p>
+                </>
+              ) : (
+                <p className="text-slate-400 italic text-sm">Texto oculto. Ouça o áudio primeiro.</p>
+              )}
+            </div>
+
+            {/* Feedback de estado */}
+            {audioState === 'error' && (
+              <p className="text-red-500 text-sm mb-4 bg-red-50 border border-red-200 rounded-lg px-4 py-2">
+                ⚠️ Não foi possível carregar o áudio. Verifique se o arquivo está público no Google Drive.
+              </p>
+            )}
+
+            {/* Botões */}
+            <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+              <button onClick={handleListen} disabled={busy}
+                className="px-6 py-3 bg-red-100 text-red-700 font-semibold rounded-lg hover:bg-red-200 transition disabled:opacity-50 flex items-center justify-center gap-2">
+                {isLoading ? <><Loader size={20} className="animate-spin"/> Carregando...</> : isPlaying ? <><Volume2 size={20}/> Reproduzindo...</> : <><Volume2 size={20}/> {step >= 2 ? 'Ouvir Novamente' : 'Ouvir Fala'}</>}
+              </button>
+
+              {step >= 2 && step < 3 && (
+                <button onClick={handleSeeText} disabled={busy}
+                  className="px-6 py-3 bg-slate-800 text-white font-semibold rounded-lg hover:bg-slate-900 transition flex items-center justify-center gap-2 animate-in slide-in-from-bottom-2">
+                  <BookOpen size={20}/> Ver Texto
+                </button>
+              )}
+
+              {step >= 3 && currentIndex < AUDIO_CLIPS.length - 1 && (
+                <button onClick={nextLine} disabled={busy}
+                  className="px-6 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition flex items-center justify-center gap-2 animate-in slide-in-from-bottom-2">
+                  Próxima <ChevronRight size={20}/>
+                </button>
+              )}
+
+              {step >= 3 && currentIndex === AUDIO_CLIPS.length - 1 && (
+                <button onClick={() => { saveProgress('shadowing', 'done'); goBack(); }} disabled={busy}
+                  className="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition flex items-center justify-center gap-2 animate-in slide-in-from-bottom-2">
+                  Concluir ✅
+                </button>
+              )}
+            </div>
+
+            {/* Barra de progresso */}
+            <div className="w-full bg-slate-100 rounded-full h-2 mt-8">
+              <div className="bg-red-500 h-2 rounded-full transition-all duration-500"
+                style={{ width: `${((currentIndex + (step >= 3 ? 1 : 0)) / AUDIO_CLIPS.length) * 100}%` }} />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+
+    // --- 5. WRITING GAME ---
+    function WritingGame({ goBack, studentName, saveProgress }) {
+      const [WRITING_QUESTIONS] = useState(() => pickRandom(ALL_WRITING_VERSIONS));
+      const [versionLabel] = useState(() => { const i = ALL_WRITING_VERSIONS.indexOf(WRITING_QUESTIONS) + 1; return `Round ${i}`; });
+      const [answers, setAnswers] = useState({});
+      const [submitted, setSubmitted] = useState(false);
+      const [isCopied, setIsCopied] = useState(false);
+      const [errorMsg, setErrorMsg] = useState("");
+
+      const allAnswered = WRITING_QUESTIONS.every(q => (answers[q.id] || "").trim().length > 0);
+
+      const generateReport = () => {
+        let text = `🎓 *Relatório: English Practice*\n👤 *Aluno:* ${studentName}\n📝 *Atividade:* Writing Practice (${versionLabel})\n\n*Respostas:*`;
+        WRITING_QUESTIONS.forEach((q, i) => {
+          text += `\n\n${i + 1}️⃣ ${q.question}\n✏️ ${answers[q.id] || "Não respondido"}`;
+        });
+        return text;
+      };
+
+      const handleSubmit = () => {
+        if (!studentName) { setErrorMsg("Preencha seu nome na tela inicial!"); return; }
+        setSubmitted(true); setErrorMsg(""); sfx.complete(); saveProgress('writing', 'done');
+      };
+
+      return (
+        <div className="animate-in duration-300">
+          <button onClick={goBack} className="flex items-center gap-2 text-slate-500 hover:text-slate-800 mb-4 sm:mb-6 transition-colors font-medium">
+            <ArrowLeft size={18}/> Back to Menu
+          </button>
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6 md:p-8 max-w-2xl mx-auto">
+            <h2 className="text-xl sm:text-2xl font-bold mb-2 flex items-center gap-2">
+              <Send className="text-purple-500" size={24}/> Writing Practice <span className="text-xs font-normal text-purple-500 bg-purple-50 px-2 py-0.5 rounded-full">{versionLabel}</span>
+            </h2>
+            <p className="text-sm sm:text-base text-slate-600 mb-6">Answer the questions below in English, in your own words. There are no right or wrong answers — write what you understood from the dialogue.</p>
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 mb-6 flex flex-col items-center gap-2">
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">🎧 Listen again if needed</span>
+              <audio controls className="w-full max-w-sm outline-none"
+                src="https://gfnvanimation-spec.github.io/english-practice/4-sasha%20e%20jared.mp3">
+              </audio>
+            </div>
+            {!submitted ? (
+              <div className="space-y-6">
+                {WRITING_QUESTIONS.map((q, i) => (
+                  <div key={q.id}>
+                    <label className="block text-sm sm:text-base font-semibold text-slate-700 mb-2">
+                      {i + 1}. {q.question}
+                    </label>
+                    <textarea rows={3} value={answers[q.id] || ""}
+                      onChange={(e) => setAnswers(prev => ({ ...prev, [q.id]: e.target.value }))}
+                      placeholder="Write your answer here..."
+                      className="w-full border border-slate-300 rounded-lg px-4 py-3 text-sm sm:text-base focus:ring-2 focus:ring-purple-500 focus:outline-none resize-none"
+                    />
+                  </div>
+                ))}
+                <div className="flex flex-col items-end gap-2 border-t pt-4">
+                  <button onClick={handleSubmit} disabled={!allAnswered}
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 sm:py-2 bg-purple-600 text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-purple-700 transition">
+                    <Send size={16}/> Submit Answers
+                  </button>
+                  {errorMsg && <span className="text-red-500 text-xs font-medium">{errorMsg}</span>}
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-6 animate-in fade-in">
+                <div className="text-5xl mb-4">✍️</div>
+                <h3 className="text-xl font-bold text-slate-800 mb-2">Great job!</h3>
+                <p className="text-slate-600 mb-6 text-sm">Your answers are ready to send to your teacher.</p>
+                <div className="space-y-4 text-left mb-8">
+                  {WRITING_QUESTIONS.map((q, i) => (
+                    <div key={q.id} className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                      <p className="text-xs font-bold text-purple-600 uppercase tracking-wider mb-1">{i + 1}. {q.question}</p>
+                      <p className="text-sm text-slate-800">{answers[q.id]}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <button onClick={() => setSubmitted(false)}
+                    className="flex items-center justify-center gap-2 px-4 py-3 sm:py-2 border border-slate-300 rounded-lg font-medium text-sm">
+                    <RefreshCw size={16}/> Edit Answers
+                  </button>
+                  <button onClick={() => { fallbackCopyTextToClipboard(generateReport()); setIsCopied(true); setTimeout(() => setIsCopied(false), 2000); }}
+                    className="flex items-center justify-center gap-2 px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium">
+                    <Copy size={16}/> {isCopied ? "Copiado!" : "Copiar"}
+                  </button>
+                  <button onClick={() => window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(generateReport())}`, "_blank")}
+                    className="flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium">
+                    <MessageCircle size={16}/> WhatsApp
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+
+    // --- 4. TYPE IN THE BLANKS ---
+    function TypeBlanksGame({ goBack, studentName, saveProgress }) {
+      const [BLANKS_DATA] = useState(() => pickRandom(ALL_BLANKS_VERSIONS));
+      const [versionLabel] = useState(() => { const i = ALL_BLANKS_VERSIONS.indexOf(BLANKS_DATA) + 1; return `Round ${i}`; });
+      const [answers, setAnswers] = useState({});
+      const [checked, setChecked] = useState(false);
+      const [score, setScore] = useState(0);
+      const [isCopied, setIsCopied] = useState(false);
+      const [errorMsg, setErrorMsg] = useState("");
+
+      const blanks = BLANKS_DATA.filter(item => item.isBlank);
+      const totalBlanks = blanks.length;
+
+      const isCorrect = (index) => {
+        const item = BLANKS_DATA[index];
+        const userAns = (answers[index] || "").trim().toLowerCase();
+        return userAns === item.text.toLowerCase();
+      };
+
+      const generateReport = () => {
+        let text = `🎓 *Relatório: English Practice*\n👤 *Aluno:* ${studentName}\n📝 *Atividade:* Type in the Blanks (${versionLabel})\n✅ *Nota:* ${score}/${totalBlanks}\n\n*Respostas do Aluno:*`;
+        let blankCount = 1;
+        BLANKS_DATA.forEach((item, index) => {
+          if (item.isBlank) {
+            const userAns = answers[index] || "Não respondido";
+            const right = (userAns.trim().toLowerCase() === item.text.toLowerCase());
+            text += `\n${blankCount}️⃣ Lacuna ${blankCount}: ${userAns} ${right ? "✅" : "❌ (Correto: "+item.text+")"}`;
+            blankCount++;
+          }
+        });
+        return text;
+      };
+
+      const handleChange = (index, value) => {
+        setAnswers(prev => ({ ...prev, [index]: value }));
+        setChecked(false); setIsCopied(false); setErrorMsg("");
+      };
+
+      const checkAnswers = () => {
+        let s = 0;
+        BLANKS_DATA.forEach((item, index) => { if (item.isBlank && isCorrect(index)) s++; });
+        setScore(s); setChecked(true);
+        if (s === totalBlanks) { sfx.complete(); saveProgress('typeblanks', 'perfect'); }
+        else if (s > 0) { sfx.correct(); saveProgress('typeblanks', 'partial'); }
+        else { sfx.wrong(); saveProgress('typeblanks', 'partial'); }
+      };
+
+      const allFilled = BLANKS_DATA.every((item, index) => !item.isBlank || (answers[index] || "").trim().length > 0);
+
+      return (
+        <div className="animate-in duration-300">
+          <button onClick={goBack} className="flex items-center gap-2 text-slate-500 hover:text-slate-800 mb-4 sm:mb-6 transition-colors font-medium">
+            <ArrowLeft size={18}/> Back to Menu
+          </button>
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6 md:p-8">
+            <h2 className="text-xl sm:text-2xl font-bold mb-2 flex items-center gap-2">
+              <PenTool className="text-orange-500" size={24}/> Type in the Blanks
+              <span className="text-xs font-normal text-orange-500 bg-orange-50 px-2 py-0.5 rounded-full">{versionLabel}</span>
+            </h2>
+            <p className="text-sm sm:text-base text-slate-600 mb-6 sm:mb-8">Type the missing words to complete the sentences. Spelling counts — but don't worry about capital letters!</p>
+
+            <div className="bg-slate-50 border border-slate-200 p-4 sm:p-6 rounded-lg text-base sm:text-lg leading-loose text-slate-800 mb-6 sm:mb-8 text-justify">
+              {BLANKS_DATA.map((item, index) => {
+                if (!item.isBlank) return <span key={index}>{item.text}</span>;
+                const correct = checked && isCorrect(index);
+                const wrong   = checked && (answers[index] || "").trim().length > 0 && !isCorrect(index);
+                const empty   = checked && !(answers[index] || "").trim().length;
+                return (
+                  <span key={index} className="inline-block mx-1 my-1 align-middle">
+                    <span className="relative inline-block">
+                      <input
+                        type="text"
+                        value={answers[index] || ""}
+                        onChange={(e) => handleChange(index, e.target.value)}
+                        disabled={checked}
+                        autoCapitalize="none"
+                        autoCorrect="off"
+                        autoComplete="off"
+                        spellCheck="false"
+                        style={{ width: `${Math.max(item.text.length * 11, 70)}px` }}
+                        className={`px-2 py-1 border-b-2 bg-transparent font-semibold focus:outline-none text-center text-sm sm:text-base transition-colors
+                          ${correct ? "border-green-500 text-green-700" :
+                            wrong   ? "border-red-500 text-red-700" :
+                            empty   ? "border-amber-400 text-slate-800" :
+                                      "border-slate-400 text-slate-800 focus:border-orange-500"}`}
+                      />
+                      {checked && correct && <CheckCircle2 className="absolute -right-5 top-1 text-green-500" size={16}/>}
+                      {checked && (wrong || empty) && (
+                        <span className="absolute -bottom-5 left-0 text-xs text-red-500 whitespace-nowrap font-semibold">{item.text}</span>
+                      )}
+                    </span>
+                  </span>
+                );
+              })}
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-t pt-6 gap-4 mt-8">
+              <div className="text-lg font-bold text-center sm:text-left">
+                {checked && <span className={score === totalBlanks ? "text-green-600" : "text-amber-600"}>Score: {score} / {totalBlanks}</span>}
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                <button onClick={() => { setAnswers({}); setChecked(false); setIsCopied(false); setErrorMsg(""); }}
+                  className="w-full sm:w-auto px-4 py-3 sm:py-2 text-slate-600 border border-slate-300 rounded-lg font-medium">Reset</button>
+                {!checked ? (
+                  <button onClick={checkAnswers} disabled={!allFilled}
+                    className="w-full sm:w-auto px-6 py-3 sm:py-2 bg-orange-500 text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-orange-600 transition">
+                    Check Answers
+                  </button>
+                ) : (
+                  <div className="flex flex-col items-center sm:items-end gap-2 w-full sm:w-auto">
+                    <div className="flex flex-col sm:flex-row gap-2 w-full">
+                      <button onClick={() => { if (!studentName) { setErrorMsg("Preencha seu nome na tela inicial!"); return; } fallbackCopyTextToClipboard(generateReport()); setIsCopied(true); setTimeout(() => setIsCopied(false), 2000); setErrorMsg(""); }}
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-3 sm:py-2 bg-slate-800 text-white rounded-lg font-medium text-sm">
+                        <Copy size={16}/> {isCopied ? "Copiado!" : "Copiar"}
+                      </button>
+                      <button onClick={() => { if (!studentName) { setErrorMsg("Preencha seu nome na tela inicial!"); return; } window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(generateReport())}`, "_blank"); setErrorMsg(""); }}
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-3 sm:py-2 bg-green-600 text-white rounded-lg font-medium text-sm">
+                        <MessageCircle size={16}/> WhatsApp
+                      </button>
+                    </div>
+                    {errorMsg && <span className="text-red-500 text-xs sm:text-sm mt-1 font-medium">{errorMsg}</span>}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+
+    // --- 6. SPEAKING GAME ---
+    function SpeakingGame({ goBack }) {
+      const [currentIndex, setCurrentIndex] = useState(0);
+      const [step, setStep] = useState('listen'); // listen | record | playback | done
+      const [audioState, setAudioState] = useState('idle'); // idle | loading | playing | error
+      const [recState, setRecState] = useState('idle'); // idle | recording | recorded
+      const [recordedUrl, setRecordedUrl] = useState(null);
+      const [showText, setShowText] = useState(false);
+      const audioRef = useRef(null);
+      const mediaRecRef = useRef(null);
+      const chunksRef = useRef([]);
+
+      const clip = AUDIO_CLIPS[currentIndex];
+
+      useEffect(() => {
+        setStep('listen');
+        setAudioState('idle');
+        setRecState('idle');
+        setRecordedUrl(null);
+        setShowText(false);
+        if (audioRef.current) { audioRef.current.onerror = null; audioRef.current.pause(); audioRef.current.src = ''; }
+      }, [currentIndex]);
+
+      // --- Tocar áudio original ---
+      const playOriginal = () => {
+        if (audioState === 'playing' || audioState === 'loading') return;
+        if (audioRef.current) { audioRef.current.onerror = null; audioRef.current.pause(); audioRef.current.src = ''; }
+        setAudioState('loading');
+        const audio = new Audio(clip.src);
+        audioRef.current = audio;
+        audio.oncanplaythrough = () => { setAudioState('playing'); audio.play().catch(() => setAudioState('error')); };
+        audio.onended = () => { setAudioState('idle'); if (step === 'listen') setStep('record'); };
+        audio.onerror = () => setAudioState('error');
+        audio.load();
+      };
+
+      // --- Tocar gravação do aluno ---
+      const playRecording = () => {
+        if (!recordedUrl) return;
+        if (audioRef.current) { audioRef.current.onerror = null; audioRef.current.pause(); audioRef.current.src = ''; }
+        setAudioState('playing');
+        const audio = new Audio(recordedUrl);
+        audioRef.current = audio;
+        audio.onended = () => setAudioState('idle');
+        audio.play().catch(() => setAudioState('error'));
+      };
+
+      // --- Gravar ---
+      const startRecording = async () => {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          chunksRef.current = [];
+          const mr = new MediaRecorder(stream);
+          mediaRecRef.current = mr;
+          mr.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
+          mr.onstop = () => {
+            const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
+            const url = URL.createObjectURL(blob);
+            setRecordedUrl(url);
+            setRecState('recorded');
+            setStep('playback');
+            stream.getTracks().forEach(t => t.stop());
+          };
+          mr.start();
+          setRecState('recording');
+        } catch(e) {
+          alert('Não foi possível acessar o microfone. Verifique as permissões do navegador.');
+        }
+      };
+
+      const stopRecording = () => {
+        if (mediaRecRef.current && recState === 'recording') {
+          mediaRecRef.current.stop();
+        }
+      };
+
+      const nextLine = () => {
+        if (currentIndex < AUDIO_CLIPS.length - 1) setCurrentIndex(i => i + 1);
+        else { setStep('done'); saveProgress('speaking', 'done'); }
+      };
+
+      const speakerColor = (speaker) => {
+        if (speaker.includes('Sasha')) return 'text-teal-600';
+        if (speaker.includes('Jared')) return 'text-blue-600';
+        return 'text-amber-600';
+      };
+
+      const busy = audioState === 'playing' || audioState === 'loading';
+      const progress = ((currentIndex + (step === 'done' ? 1 : 0)) / AUDIO_CLIPS.length) * 100;
+
+      if (step === 'done') {
+        return (
+          <div className="animate-in duration-300">
+            <button onClick={goBack} className="flex items-center gap-2 text-slate-500 hover:text-slate-800 mb-4 sm:mb-6 transition-colors font-medium">
+              <ArrowLeft size={18}/> Back to Menu
+            </button>
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8 max-w-2xl mx-auto text-center">
+              <div className="text-6xl mb-4">🎙️</div>
+              <h2 className="text-2xl font-bold text-slate-800 mb-2">Great speaking practice!</h2>
+              <p className="text-slate-500 mb-6">You recorded all {AUDIO_CLIPS.length} lines. Keep practicing to improve your pronunciation!</p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <button onClick={() => { setCurrentIndex(0); setStep('listen'); }}
+                  className="flex items-center justify-center gap-2 px-6 py-2 bg-pink-600 text-white rounded-lg font-medium hover:bg-pink-700 transition">
+                  <RefreshCw size={18}/> Practice Again
+                </button>
+                <button onClick={goBack} className="flex items-center justify-center px-6 py-2 border border-slate-300 rounded-lg font-medium">Back to Menu</button>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="animate-in duration-300">
+          <button onClick={goBack} className="flex items-center gap-2 text-slate-500 hover:text-slate-800 mb-4 sm:mb-6 transition-colors font-medium">
+            <ArrowLeft size={18}/> Back to Menu
+          </button>
+
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6 md:p-8 max-w-2xl mx-auto flex flex-col items-center text-center">
+            <h2 className="text-xl sm:text-2xl font-bold mb-1 flex items-center gap-2">
+              <MessageCircle className="text-pink-500" size={24}/> Speaking Practice
+            </h2>
+            <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs sm:text-sm font-semibold mb-6">
+              Fala {currentIndex + 1} de {AUDIO_CLIPS.length}
+            </span>
+
+            {/* Etapas visuais */}
+            <div className="flex items-center gap-2 mb-6 text-xs font-semibold">
+              {['listen','record','playback'].map((s, i) => {
+                const labels = ['1. Ouça', '2. Grave', '3. Compare'];
+                const active = step === s;
+                const done = ['listen','record','playback'].indexOf(step) > i;
+                return (
+                  <React.Fragment key={s}>
+                    <span className={`px-3 py-1 rounded-full transition-all ${active ? 'bg-pink-600 text-white' : done ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'}`}>
+                      {done ? '✓ ' : ''}{labels[i]}
+                    </span>
+                    {i < 2 && <ChevronRight size={14} className="text-slate-300"/>}
+                  </React.Fragment>
+                );
+              })}
+            </div>
+
+            {/* Caixa de texto */}
+            <div className="min-h-[110px] flex flex-col items-center justify-center w-full bg-slate-50 rounded-lg p-5 mb-6 border border-slate-100">
+              {showText ? (
+                <>
+                  <span className={`font-bold text-xs uppercase tracking-wider mb-2 ${speakerColor(clip.speaker)}`}>{clip.speaker}</span>
+                  <p className="text-base sm:text-lg font-medium text-slate-800">{clip.label}</p>
+                </>
+              ) : (
+                <button onClick={() => setShowText(true)} className="text-sm text-slate-400 underline underline-offset-2 hover:text-slate-600 transition">
+                  👁 Ver texto da fala
+                </button>
+              )}
+            </div>
+
+            {/* Controles por etapa */}
+            <div className="flex flex-col gap-3 w-full max-w-sm">
+
+              {/* ETAPA 1: Ouvir */}
+              <div className={`rounded-lg border p-4 transition-all ${step === 'listen' ? 'border-pink-300 bg-pink-50' : 'border-slate-100 bg-slate-50 opacity-60'}`}>
+                <p className="text-xs font-bold text-pink-600 uppercase tracking-wider mb-2">Passo 1 — Ouça o modelo</p>
+                <button onClick={playOriginal} disabled={busy}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-pink-600 text-white font-semibold rounded-lg hover:bg-pink-700 transition disabled:opacity-50">
+                  {audioState === 'loading' ? <><Loader size={18} className="animate-spin"/> Carregando...</>
+                   : audioState === 'playing' ? <><Volume2 size={18}/> Reproduzindo...</>
+                   : <><Volume2 size={18}/> {step !== 'listen' ? 'Ouvir novamente' : 'Ouvir fala'}</>}
+                </button>
+              </div>
+
+              {/* ETAPA 2: Gravar */}
+              <div className={`rounded-lg border p-4 transition-all ${step === 'record' ? 'border-red-300 bg-red-50' : 'border-slate-100 bg-slate-50 opacity-60'}`}>
+                <p className="text-xs font-bold text-red-600 uppercase tracking-wider mb-2">Passo 2 — Grave sua voz</p>
+                {recState !== 'recording' ? (
+                  <button onClick={startRecording} disabled={step !== 'record' && step !== 'playback'}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition disabled:opacity-40">
+                    🔴 {recState === 'recorded' ? 'Gravar novamente' : 'Iniciar gravação'}
+                  </button>
+                ) : (
+                  <button onClick={stopRecording}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-700 text-white font-semibold rounded-lg animate-pulse">
+                    ⏹ Parar gravação
+                  </button>
+                )}
+              </div>
+
+              {/* ETAPA 3: Comparar */}
+              <div className={`rounded-lg border p-4 transition-all ${step === 'playback' ? 'border-green-300 bg-green-50' : 'border-slate-100 bg-slate-50 opacity-60'}`}>
+                <p className="text-xs font-bold text-green-600 uppercase tracking-wider mb-2">Passo 3 — Compare com o original</p>
+                <div className="flex gap-2">
+                  <button onClick={playOriginal} disabled={busy || step !== 'playback'}
+                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-slate-700 text-white text-sm font-semibold rounded-lg hover:bg-slate-800 transition disabled:opacity-40">
+                    <Volume2 size={16}/> Original
+                  </button>
+                  <button onClick={playRecording} disabled={busy || !recordedUrl}
+                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition disabled:opacity-40">
+                    <Volume2 size={16}/> Minha voz
+                  </button>
+                </div>
+              </div>
+
+              {/* Avançar */}
+              {step === 'playback' && (
+                <button onClick={nextLine}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-pink-600 text-white font-semibold rounded-lg hover:bg-pink-700 transition animate-in slide-in-from-bottom-2 mt-1">
+                  {currentIndex < AUDIO_CLIPS.length - 1 ? <> Próxima fala <ChevronRight size={20}/></> : '✅ Concluir'}
+                </button>
+              )}
+            </div>
+
+            {/* Barra de progresso */}
+            <div className="w-full bg-slate-100 rounded-full h-2 mt-8">
+              <div className="bg-pink-500 h-2 rounded-full transition-all duration-500" style={{ width: `${progress}%` }}/>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // --- RENDER ---
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

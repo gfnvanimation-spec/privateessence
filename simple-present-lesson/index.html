@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Simple Present — English Lesson</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    :root {
+      --ink:    #1a1a2e;
+      --paper:  #faf8f3;
+      --cream:  #f0ebe0;
+      --gold:   #c9973a;
+      --gold2:  #e8b84b;
+      --teal:   #2a7d6f;
+      --teal2:  #3aab99;
+      --rose:   #c0504a;
+      --slate:  #5a6070;
+      --line:   #ddd8cc;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--paper);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--ink);
+      min-height: 100vh;
+    }
+    .display { font-family: 'Playfair Display', serif; }
+
+    /* ── decorative top bar ── */
+    .top-bar {
+      background: var(--ink);
+      height: 5px;
+      background: linear-gradient(90deg, var(--gold) 0%, var(--teal2) 50%, var(--rose) 100%);
+    }
+
+    /* ── tab nav ── */
+    .tab-btn {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.55rem 1.1rem;
+      border-radius: 999px;
+      transition: all .2s;
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      background: transparent;
+      color: var(--slate);
+    }
+    .tab-btn.active {
+      background: var(--ink);
+      color: #fff;
+      border-color: var(--ink);
+    }
+    .tab-btn:not(.active):hover {
+      border-color: var(--ink);
+      color: var(--ink);
+    }
+
+    /* ── section heading ── */
+    .section-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    /* ── formula box ── */
+    .formula-box {
+      background: #2e3d52;
+      color: #fff;
+      border-radius: 14px;
+      padding: 1.4rem 1.6rem;
+      font-family: 'Playfair Display', serif;
+      border: 1.5px solid rgba(255,255,255,0.08);
+    }
+    .formula-pill {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      margin: 0.15rem;
+    }
+    .pill-sub  { background: rgba(201,151,58,0.25);  color: var(--gold2); }
+    .pill-verb { background: rgba(58,171,153,0.25);  color: var(--teal2); }
+    .pill-obj  { background: rgba(255,255,255,0.12); color: #ddd; }
+    .pill-s    { background: rgba(192,80,74,0.3);    color: #f08a86; }
+    .pill-neg  { background: rgba(150,150,255,0.2);  color: #aab4ff; }
+
+    /* ── example card ── */
+    .ex-card {
+      background: #fff;
+      border: 1.5px solid var(--line);
+      border-radius: 14px;
+      padding: 1rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      transition: box-shadow .2s, transform .15s;
+      cursor: default;
+    }
+    .ex-card:hover { box-shadow: 0 4px 18px rgba(0,0,0,0.08); transform: translateY(-1px); }
+
+    /* ── audio button ── */
+    .audio-btn {
+      flex-shrink: 0;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      border: none; cursor: pointer;
+      transition: all .18s;
+    }
+    .audio-btn.teal  { background: var(--teal);  color: #fff; }
+    .audio-btn.gold  { background: var(--gold);  color: #fff; }
+    .audio-btn.rose  { background: var(--rose);  color: #fff; }
+    .audio-btn.ink   { background: var(--ink);   color: #fff; }
+    .audio-btn:hover { filter: brightness(1.12); transform: scale(1.08); }
+    .audio-btn:active{ transform: scale(0.95); }
+    .audio-btn.playing { animation: pulse-ring .8s infinite; }
+
+    @keyframes pulse-ring {
+      0%   { box-shadow: 0 0 0 0 rgba(42,125,111,0.5); }
+      70%  { box-shadow: 0 0 0 10px rgba(42,125,111,0); }
+      100% { box-shadow: 0 0 0 0 rgba(42,125,111,0); }
+    }
+
+    /* ── translation tooltip ── */
+    .trans-btn {
+      font-size: 0.7rem;
+      color: var(--slate);
+      background: var(--cream);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 0.15rem 0.5rem;
+      cursor: pointer;
+      transition: background .15s;
+      white-space: nowrap;
+    }
+    .trans-btn:hover { background: var(--line); }
+
+    /* ── verb table ── */
+    .verb-table { width: 100%; border-collapse: collapse; }
+    .verb-table th {
+      background: var(--ink); color: #fff;
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.6rem 0.9rem; text-align: left;
+    }
+    .verb-table td {
+      padding: 0.6rem 0.9rem;
+      border-bottom: 1px solid var(--line);
+      font-size: 0.88rem;
+    }
+    .verb-table tr:last-child td { border-bottom: none; }
+    .verb-table tr:nth-child(even) td { background: var(--cream); }
+
+    /* ── quiz ── */
+    .quiz-opt {
+      border: 1.5px solid var(--line);
+      border-radius: 10px;
+      padding: 0.7rem 1rem;
+      cursor: pointer;
+      transition: all .15s;
+      background: #fff;
+      text-align: left;
+      width: 100%;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+    }
+    .quiz-opt:hover:not(:disabled)   { border-color: var(--teal); color: var(--teal); }
+    .quiz-opt.correct  { background: #edfaf6; border-color: var(--teal2); color: var(--teal); font-weight: 600; }
+    .quiz-opt.wrong    { background: #fdf0ef; border-color: var(--rose);  color: var(--rose); }
+    .quiz-opt:disabled { cursor: default; }
+
+    /* ── progress bar ── */
+    .prog-bar { height: 5px; background: var(--line); border-radius: 99px; overflow: hidden; }
+    .prog-fill { height: 100%; background: linear-gradient(90deg, var(--teal), var(--gold2)); border-radius: 99px; transition: width .5s ease; }
+
+    /* ── highlight chip ── */
+    .chip { display: inline-block; padding: 0.1rem 0.45rem; border-radius: 5px; font-weight: 600; font-size: 0.88em; }
+    .chip-verb { background: rgba(42,125,111,0.12); color: var(--teal); }
+    .chip-subj { background: rgba(201,151,58,0.15); color: #a07620; }
+    .chip-neg  { background: rgba(192,80,74,0.1);   color: var(--rose); }
+
+    /* fade-in */
+    @keyframes fadeUp { from { opacity:0; transform:translateY(14px);} to { opacity:1; transform:none;} }
+    .fade-up { animation: fadeUp .35s ease both; }
+  </style>
+</head>
+<body>
+<div class="top-bar"></div>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useRef, useCallback } = React;
+
+// ─────────────────────────────────────────────
+// AUDIO BASE URL — troque pelo seu repositório
+// ─────────────────────────────────────────────
+const BASE = "https://gfnvanimation-spec.github.io/english-practice/sp/";
+const au = name => `${BASE}${encodeURIComponent(name)}.mp3`;
+
+// ─────────────────────────────────────────────
+// CONTEÚDO DA LIÇÃO
+// ─────────────────────────────────────────────
+
+// SEÇÃO 1 — Afirmativas
+const AFFIRMATIVE = [
+  { id:"af1",  en:"I work every day.",              pt:"Eu trabalho todo dia.",             color:"teal" },
+  { id:"af2",  en:"She works at a hospital.",        pt:"Ela trabalha num hospital.",        color:"teal" },
+  { id:"af3",  en:"He studies English at night.",    pt:"Ele estuda inglês à noite.",        color:"teal" },
+  { id:"af4",  en:"We live in Brazil.",              pt:"Nós moramos no Brasil.",            color:"teal" },
+  { id:"af5",  en:"They play football on weekends.", pt:"Eles jogam futebol nos fins de semana.", color:"teal" },
+  { id:"af6",  en:"The cat sleeps all day.",         pt:"O gato dorme o dia todo.",          color:"teal" },
+  { id:"af7",  en:"My brother watches TV at night.", pt:"Meu irmão assiste TV à noite.",     color:"teal" },
+];
+
+// SEÇÃO 2 — Negativas
+const NEGATIVE = [
+  { id:"neg1", en:"I don't eat meat.",               pt:"Eu não como carne.",                color:"rose" },
+  { id:"neg2", en:"She doesn't like coffee.",        pt:"Ela não gosta de café.",            color:"rose" },
+  { id:"neg3", en:"He doesn't drive to work.",       pt:"Ele não vai de carro para o trabalho.", color:"rose" },
+  { id:"neg4", en:"We don't have a car.",            pt:"Nós não temos carro.",              color:"rose" },
+  { id:"neg5", en:"They don't speak Portuguese.",    pt:"Eles não falam português.",         color:"rose" },
+];
+
+// SEÇÃO 3 — Interrogativas
+const QUESTIONS = [
+  { id:"q1",   en:"Do you work on Saturdays?",       pt:"Você trabalha aos sábados?",        color:"gold" },
+  { id:"q2",   en:"Does she live near here?",        pt:"Ela mora perto daqui?",             color:"gold" },
+  { id:"q3",   en:"Do they study together?",         pt:"Eles estudam juntos?",              color:"gold" },
+  { id:"q4",   en:"Does he like music?",             pt:"Ele gosta de música?",              color:"gold" },
+  { id:"q5",   en:"What do you do on weekends?",     pt:"O que você faz nos fins de semana?", color:"gold" },
+];
+
+// SEÇÃO 4 — Verbos comuns
+const VERBS = [
+  { base:"work",  he:"works",  neg:"doesn't work",  pt:"trabalhar" },
+  { base:"study", he:"studies",neg:"doesn't study", pt:"estudar" },
+  { base:"live",  he:"lives",  neg:"doesn't live",  pt:"morar" },
+  { base:"eat",   he:"eats",   neg:"doesn't eat",   pt:"comer" },
+  { base:"play",  he:"plays",  neg:"doesn't play",  pt:"jogar/tocar" },
+  { base:"go",    he:"goes",   neg:"doesn't go",    pt:"ir" },
+  { base:"have",  he:"has",    neg:"doesn't have",  pt:"ter" },
+  { base:"like",  he:"likes",  neg:"doesn't like",  pt:"gostar" },
+  { base:"watch", he:"watches",neg:"doesn't watch", pt:"assistir" },
+  { base:"drive", he:"drives", neg:"doesn't drive", pt:"dirigir" },
+];
+
+// SEÇÃO 5 — Quiz
+const QUIZ = [
+  {
+    q: "She ___ at a big company.",
+    opts: ["work","works","is work","working"],
+    ans: 1,
+    tip: "With he/she/it we add -s to the verb."
+  },
+  {
+    q: "They ___ speak French.",
+    opts: ["doesn't","don't","not","isn't"],
+    ans: 1,
+    tip: "With I/you/we/they use DON'T for negatives."
+  },
+  {
+    q: "___ he live in São Paulo?",
+    opts: ["Do","Is","Does","Has"],
+    ans: 2,
+    tip: "With he/she/it use DOES to form questions."
+  },
+  {
+    q: "I ___ coffee every morning.",
+    opts: ["drinks","is drink","drink","drinking"],
+    ans: 2,
+    tip: "With I, the verb stays in the base form."
+  },
+  {
+    q: "My sister ___ TV at night.",
+    opts: ["watch","is watch","watching","watches"],
+    ans: 3,
+    tip: "He/she/it: add -es to verbs ending in -ch, -sh, -x, -o."
+  },
+];
+
+// ─────────────────────────────────────────────
+// AUDIO HOOK
+// ─────────────────────────────────────────────
+function useAudio() {
+  const [playing, setPlaying] = useState(null);
+  const audioRef = useRef(null);
+
+  const play = useCallback((id, src) => {
+    if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
+    if (playing === id) { setPlaying(null); return; }
+    const a = new Audio(src);
+    audioRef.current = a;
+    setPlaying(id);
+    a.play().catch(() => {});
+    a.onended = () => setPlaying(null);
+    a.onerror = () => setPlaying(null);
+  }, [playing]);
+
+  return { playing, play };
+}
+
+
+// ─────────────────────────────────────────────
+// SOUND EFFECTS (Web Audio API)
+// ─────────────────────────────────────────────
+const getAudioCtx = () => {
+  if (!window._sfxCtx) window._sfxCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return window._sfxCtx;
+};
+const playTone = (freq, dur, type = "sine", gain = 0.28, start = 0) => {
+  try {
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const g   = ctx.createGain();
+    osc.connect(g); g.connect(ctx.destination);
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, ctx.currentTime + start);
+    g.gain.setValueAtTime(gain, ctx.currentTime + start);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
+    osc.start(ctx.currentTime + start);
+    osc.stop(ctx.currentTime + start + dur);
+  } catch(e) {}
+};
+const sfx = {
+  correct: () => {
+    playTone(523, 0.12, "sine", 0.28, 0);
+    playTone(659, 0.20, "sine", 0.28, 0.10);
+  },
+  wrong: () => {
+    playTone(220, 0.08, "sawtooth", 0.22, 0);
+    playTone(180, 0.18, "sawtooth", 0.18, 0.08);
+  },
+  complete: () => {
+    playTone(523,  0.12, "sine", 0.28, 0);
+    playTone(659,  0.12, "sine", 0.28, 0.13);
+    playTone(784,  0.12, "sine", 0.28, 0.26);
+    playTone(1047, 0.30, "sine", 0.28, 0.39);
+  },
+};
+
+// ─────────────────────────────────────────────
+// ICONS
+// ─────────────────────────────────────────────
+const Icon = ({ d, size=20 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <path d={d}/>
+  </svg>
+);
+const PlayIcon  = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>;
+const PauseIcon = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>;
+
+// ─────────────────────────────────────────────
+// EXAMPLE CARD
+// ─────────────────────────────────────────────
+function ExCard({ item, playing, play }) {
+  const [showPt, setShowPt] = useState(false);
+  const isPlaying = playing === item.id;
+  return (
+    <div className="ex-card fade-up">
+      <button
+        className={`audio-btn ${item.color} ${isPlaying ? "playing" : ""}`}
+        onClick={() => play(item.id, au(item.id))}
+        title="Ouvir pronúncia"
+      >
+        {isPlaying ? <PauseIcon/> : <PlayIcon/>}
+      </button>
+      <div className="flex-1 min-w-0">
+        <p style={{fontSize:"0.95rem", fontWeight:500, lineHeight:1.4}}>{item.en}</p>
+        {showPt && (
+          <p style={{fontSize:"0.78rem", color:"var(--slate)", marginTop:"0.2rem"}}>{item.pt}</p>
+        )}
+      </div>
+      <button className="trans-btn" onClick={() => setShowPt(v => !v)}>
+        {showPt ? "ocultar" : "pt 🇧🇷"}
+      </button>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// TABS
+// ─────────────────────────────────────────────
+const TABS = [
+  { id:"explain",   label:"📖 Explicação" },
+  { id:"examples",  label:"💬 Exemplos" },
+  { id:"verbs",     label:"📋 Verbos" },
+  { id:"errors",    label:"🇧🇷 Erros comuns" },
+  { id:"listening", label:"👂 Percepção" },
+  { id:"quiz",      label:"✏️ Quiz" },
+];
+
+// ─────────────────────────────────────────────
+// EXPLAIN TAB
+// ─────────────────────────────────────────────
+function ExplainTab({ playing, play }) {
+  return (
+    <div style={{display:"flex", flexDirection:"column", gap:"1.4rem"}}>
+
+      {/* WHEN TO USE */}
+      <div>
+        <p className="section-label" style={{marginBottom:"0.5rem"}}>When do we use it?</p>
+        <div style={{background:"var(--cream)", borderRadius:12, padding:"1rem 1.2rem", display:"flex", flexDirection:"column", gap:"0.5rem"}}>
+          {[
+            ["🔁","Habits & routines","I go to the gym every Monday."],
+            ["💡","Facts & general truths","Water boils at 100°C."],
+            ["💼","Jobs & permanent situations","She works at a school."],
+            ["❤️","Likes & preferences","He loves pizza."],
+          ].map(([icon,title,ex]) => (
+            <div key={title} style={{display:"flex", gap:"0.6rem", alignItems:"flex-start"}}>
+              <span style={{fontSize:"1.1rem", lineHeight:1.4}}>{icon}</span>
+              <div>
+                <span style={{fontWeight:600, fontSize:"0.88rem"}}>{title}: </span>
+                <span style={{fontSize:"0.88rem", color:"var(--slate)", fontStyle:"italic"}}>{ex}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* AFFIRMATIVE FORMULA */}
+      <div>
+        <p className="section-label" style={{marginBottom:"0.5rem"}}>Affirmative</p>
+        <div className="formula-box">
+          <p style={{fontSize:"0.7rem", letterSpacing:"0.12em", textTransform:"uppercase", color:"rgba(255,255,255,0.5)", marginBottom:"0.5rem"}}>Formula</p>
+          <div style={{display:"flex", alignItems:"center", gap:"0.3rem", flexWrap:"wrap"}}>
+            <span className="formula-pill pill-sub">Subject</span>
+            <span style={{color:"rgba(255,255,255,0.4)"}}>+</span>
+            <span className="formula-pill pill-verb">verb</span>
+            <span style={{color:"rgba(255,255,255,0.4)", fontSize:"0.8rem"}}>(+</span>
+            <span className="formula-pill pill-s">-s / -es</span>
+            <span style={{color:"rgba(255,255,255,0.5)", fontSize:"0.78rem"}}>with he/she/it</span>
+            <span style={{color:"rgba(255,255,255,0.4)", fontSize:"0.8rem"}}>)</span>
+            <span style={{color:"rgba(255,255,255,0.4)"}}>+</span>
+            <span className="formula-pill pill-obj">complement</span>
+          </div>
+          <div style={{marginTop:"1rem", display:"flex", flexDirection:"column", gap:"0.4rem"}}>
+            <p style={{fontSize:"0.82rem", color:"rgba(255,255,255,0.6)", letterSpacing:"0.05em"}}>EXAMPLES</p>
+            <p style={{fontSize:"0.92rem"}}>I / You / We / They → <span style={{color:"var(--teal2)", fontWeight:600}}>work</span></p>
+            <p style={{fontSize:"0.92rem"}}>He / She / It → <span style={{color:"var(--gold2)", fontWeight:600}}>work<span style={{color:"#f08a86"}}>s</span></span></p>
+          </div>
+        </div>
+      </div>
+
+      {/* LISTEN to affirmatives */}
+      <div>
+        <p className="section-label" style={{marginBottom:"0.5rem"}}>Listen — affirmative</p>
+        <div style={{display:"flex", flexDirection:"column", gap:"0.55rem"}}>
+          {AFFIRMATIVE.slice(0,4).map(item => (
+            <ExCard key={item.id} item={item} playing={playing} play={play}/>
+          ))}
+        </div>
+      </div>
+
+      {/* NEGATIVE FORMULA */}
+      <div>
+        <p className="section-label" style={{marginBottom:"0.5rem"}}>Negative</p>
+        <div className="formula-box">
+          <div style={{display:"flex", alignItems:"center", gap:"0.3rem", flexWrap:"wrap"}}>
+            <span className="formula-pill pill-sub">Subject</span>
+            <span style={{color:"rgba(255,255,255,0.4)"}}>+</span>
+            <span className="formula-pill pill-neg">don't / doesn't</span>
+            <span style={{color:"rgba(255,255,255,0.4)"}}>+</span>
+            <span className="formula-pill pill-verb">verb (base)</span>
+            <span style={{color:"rgba(255,255,255,0.4)"}}>+</span>
+            <span className="formula-pill pill-obj">complement</span>
+          </div>
+          <div style={{marginTop:"1rem", display:"flex", flexDirection:"column", gap:"0.4rem"}}>
+            <p style={{fontSize:"0.92rem"}}>I / You / We / They → <span style={{color:"#aab4ff", fontWeight:600}}>don't</span> work</p>
+            <p style={{fontSize:"0.92rem"}}>He / She / It → <span style={{color:"#aab4ff", fontWeight:600}}>doesn't</span> work</p>
+          </div>
+        </div>
+      </div>
+
+      {/* QUESTION FORMULA */}
+      <div>
+        <p className="section-label" style={{marginBottom:"0.5rem"}}>Question</p>
+        <div className="formula-box">
+          <div style={{display:"flex", alignItems:"center", gap:"0.3rem", flexWrap:"wrap"}}>
+            <span className="formula-pill pill-neg">Do / Does</span>
+            <span style={{color:"rgba(255,255,255,0.4)"}}>+</span>
+            <span className="formula-pill pill-sub">Subject</span>
+            <span style={{color:"rgba(255,255,255,0.4)"}}>+</span>
+            <span className="formula-pill pill-verb">verb (base)</span>
+            <span style={{color:"rgba(255,255,255,0.4)"}}>+</span>
+            <span className="formula-pill pill-obj">complement?</span>
+          </div>
+          <div style={{marginTop:"1rem", display:"flex", flexDirection:"column", gap:"0.4rem"}}>
+            <p style={{fontSize:"0.92rem"}}><span style={{color:"#aab4ff", fontWeight:600}}>Do</span> you / we / they work here?</p>
+            <p style={{fontSize:"0.92rem"}}><span style={{color:"#aab4ff", fontWeight:600}}>Does</span> he / she work here?</p>
+          </div>
+        </div>
+      </div>
+
+      {/* SPELLING RULES */}
+      <div>
+        <p className="section-label" style={{marginBottom:"0.5rem"}}>Spelling rules for he/she/it</p>
+        <div style={{background:"var(--cream)", borderRadius:12, padding:"1rem 1.2rem"}}>
+          {[
+            ["-ch, -sh, -x, -o", "add -es", "watch → watches, go → goes"],
+            ["consonant + y", "y → -ies", "study → studies, fly → flies"],
+            ["most verbs", "add -s", "work → works, eat → eats"],
+            ["have", "irregular", "have → has"],
+          ].map(([rule,change,ex]) => (
+            <div key={rule} style={{display:"flex", gap:"0.7rem", alignItems:"flex-start", padding:"0.45rem 0", borderBottom:"1px solid var(--line)"}}>
+              <span style={{fontSize:"0.78rem", fontWeight:700, background:"var(--ink)", color:"#fff", padding:"0.15rem 0.5rem", borderRadius:5, whiteSpace:"nowrap"}}>{rule}</span>
+              <div>
+                <span style={{fontSize:"0.82rem", color:"var(--teal)", fontWeight:600}}>{change}</span>
+                <span style={{fontSize:"0.8rem", color:"var(--slate)"}}> · {ex}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// LISTENING TAB — S-sound perception
+// ─────────────────────────────────────────────
+const LISTENING_ROUNDS = [
+  { id:"af1",  sentence:"I work every day.",           hasS: false },
+  { id:"af2",  sentence:"She works at a hospital.",    hasS: true  },
+  { id:"af3",  sentence:"He studies English at night.",hasS: true  },
+  { id:"af4",  sentence:"We live in Brazil.",          hasS: false },
+  { id:"af5",  sentence:"They play football on weekends.", hasS: false },
+  { id:"af6",  sentence:"The cat sleeps all day.",     hasS: true  },
+  { id:"af7",  sentence:"My brother watches TV at night.", hasS: true },
+  { id:"neg1", sentence:"I don't eat meat.",           hasS: false },
+  { id:"neg2", sentence:"She doesn't like coffee.",    hasS: false },
+  { id:"af1",  sentence:"I work every day.",           hasS: false },
+];
+
+// Fisher-Yates shuffle
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function ListeningTab() {
+  const [rounds] = useState(() => shuffle(LISTENING_ROUNDS).slice(0, 8));
+  const [current, setCurrent] = useState(0);
+  const [phase, setPhase] = useState("listen"); // listen | answer | result
+  const [chosen, setChosen] = useState(null);
+  const [score, setScore] = useState(0);
+  const [done, setDone] = useState(false);
+  const [audioState, setAudioState] = useState("idle"); // idle | playing
+  const audioRef = useRef(null);
+
+  const round = rounds[current];
+  const progress = (current / rounds.length) * 100;
+
+  function playAudio() {
+    if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
+    const a = new Audio(au(round.id));
+    audioRef.current = a;
+    setAudioState("playing");
+    a.play().catch(() => {});
+    a.onended = () => { setAudioState("idle"); setPhase("answer"); };
+    a.onerror = () => { setAudioState("idle"); setPhase("answer"); };
+  }
+
+  function choose(hasS) {
+    if (phase !== "answer") return;
+    setChosen(hasS);
+    if (hasS === round.hasS) { setScore(s => s + 1); sfx.correct(); }
+    else { sfx.wrong(); }
+    setPhase("result");
+  }
+
+  function next() {
+    if (current + 1 >= rounds.length) { setDone(true); sfx.complete(); return; }
+    setCurrent(c => c + 1);
+    setPhase("listen");
+    setChosen(null);
+    setAudioState("idle");
+    if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
+  }
+
+  function reset() {
+    setCurrent(0); setPhase("listen"); setChosen(null);
+    setScore(0); setDone(false); setAudioState("idle");
+    if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
+  }
+
+  if (done) {
+    const pct = Math.round((score / rounds.length) * 100);
+    return (
+      <div style={{textAlign:"center", padding:"2.5rem 1rem"}} className="fade-up">
+        <div style={{fontSize:"3.5rem", marginBottom:"0.5rem"}}>
+          {pct === 100 ? "👂🏆" : pct >= 75 ? "👂🎯" : "👂💪"}
+        </div>
+        <p className="display" style={{fontSize:"2rem", fontWeight:900}}>{score}/{rounds.length}</p>
+        <p style={{color:"var(--slate)", marginTop:"0.3rem", marginBottom:"0.6rem"}}>{pct}% de acertos</p>
+        <p style={{fontSize:"0.85rem", color:"var(--slate)", marginBottom:"1.8rem", lineHeight:1.6, maxWidth:320, margin:"0 auto 1.8rem"}}>
+          {pct === 100
+            ? "Perfeito! Seu ouvido está treinado para o -s."
+            : pct >= 75
+            ? "Muito bom! Continue praticando — o -s vai ficar cada vez mais nítido."
+            : "O -s final é mesmo difícil para brasileiros. Tente de novo com atenção na terminação do verbo."}
+        </p>
+        <button onClick={reset} style={{
+          background:"var(--ink)", color:"#fff", border:"none", borderRadius:10,
+          padding:"0.75rem 2rem", fontFamily:"'DM Sans',sans-serif",
+          fontWeight:600, fontSize:"0.9rem", cursor:"pointer"
+        }}>Tentar novamente</button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{display:"flex", flexDirection:"column", gap:"1.2rem"}}>
+
+      {/* INTRO */}
+      <div style={{
+        background:"linear-gradient(135deg, #edf8f6, #e8f4ff)",
+        border:"1.5px solid #b8e0d8", borderRadius:14,
+        padding:"1rem 1.2rem", display:"flex", gap:"0.8rem", alignItems:"flex-start"
+      }}>
+        <span style={{fontSize:"1.6rem", lineHeight:1}}>👂</span>
+        <div>
+          <p style={{fontWeight:700, fontSize:"0.9rem", marginBottom:"0.25rem"}}>Treino de percepção</p>
+          <p style={{fontSize:"0.82rem", color:"var(--slate)", lineHeight:1.5}}>
+            Ouça a frase e decida: o verbo tem <strong>-s</strong> no final ou não? Preste atenção na terminação — é um som que brasileiros tendem a ignorar.
+          </p>
+        </div>
+      </div>
+
+      {/* PROGRESS */}
+      <div>
+        <div style={{display:"flex", justifyContent:"space-between", marginBottom:"0.4rem"}}>
+          <p className="section-label">Frase {current + 1} de {rounds.length}</p>
+          <span style={{fontSize:"0.8rem", color:"var(--slate)"}}>✓ {score} corretas</span>
+        </div>
+        <div className="prog-bar"><div className="prog-fill" style={{width:`${progress}%`}}/></div>
+      </div>
+
+      {/* MAIN CARD */}
+      <div style={{
+        background:"#fff", border:"1.5px solid var(--line)",
+        borderRadius:16, padding:"1.6rem 1.4rem",
+        display:"flex", flexDirection:"column", alignItems:"center", gap:"1.2rem",
+        textAlign:"center"
+      }} key={current} className="fade-up">
+
+        {/* PLAY button */}
+        <button
+          onClick={playAudio}
+          disabled={audioState === "playing" || phase === "result"}
+          style={{
+            width:72, height:72, borderRadius:"50%",
+            background: audioState === "playing" ? "var(--teal2)" : "var(--teal)",
+            color:"#fff", border:"none", cursor: audioState === "playing" ? "default" : "pointer",
+            display:"flex", alignItems:"center", justifyContent:"center",
+            fontSize:"1.8rem", transition:"all .2s",
+            boxShadow: audioState === "playing" ? "0 0 0 12px rgba(58,171,153,0.2)" : "0 4px 16px rgba(42,125,111,0.3)",
+            animation: audioState === "playing" ? "pulse-ring 1s infinite" : "none",
+          }}
+        >
+          {audioState === "playing" ? "⏸" : "▶"}
+        </button>
+
+        {/* instruction */}
+        <div>
+          {phase === "listen" && (
+            <p style={{color:"var(--slate)", fontSize:"0.88rem"}}>
+              {audioState === "playing" ? "Ouça com atenção..." : "Clique para ouvir a frase"}
+            </p>
+          )}
+          {phase === "answer" && (
+            <div className="fade-up">
+              <p style={{fontWeight:700, fontSize:"1rem", marginBottom:"0.3rem"}}>O verbo tem <span style={{color:"var(--teal)"}}>-s</span> no final?</p>
+              <p style={{fontSize:"0.8rem", color:"var(--slate)"}}>Você pode ouvir de novo antes de responder</p>
+            </div>
+          )}
+          {phase === "result" && (
+            <div className="fade-up" style={{display:"flex", flexDirection:"column", alignItems:"center", gap:"0.4rem"}}>
+              {chosen === round.hasS ? (
+                <p style={{fontWeight:700, fontSize:"1.1rem", color:"var(--teal)"}}>✓ Correto!</p>
+              ) : (
+                <p style={{fontWeight:700, fontSize:"1.1rem", color:"var(--rose)"}}>✗ Quase!</p>
+              )}
+              <div style={{
+                background:"var(--cream)", borderRadius:10,
+                padding:"0.6rem 1rem", fontSize:"0.9rem", fontWeight:600,
+                fontFamily:"'Playfair Display',serif"
+              }}>
+                {round.sentence.split(" ").map((word, i) => {
+                  const isVerb = round.hasS
+                    ? word.toLowerCase().replace(/[^a-z]/g,"").match(/(works|studies|sleeps|watches|doesn't)/)
+                    : word.toLowerCase().replace(/[^a-z]/g,"").match(/(work|live|play|eat|don't)/)
+                  return (
+                    <span key={i} style={{
+                      color: isVerb ? (round.hasS ? "var(--teal)" : "var(--gold)") : "inherit",
+                      fontWeight: isVerb ? 800 : 600,
+                      marginRight:"0.25rem"
+                    }}>{word}</span>
+                  );
+                })}
+              </div>
+              <p style={{fontSize:"0.8rem", color:"var(--slate)"}}>
+                {round.hasS
+                  ? "✅ Sim, tem -s — sujeito é he/she/it"
+                  : "❌ Não tem -s — sujeito é I/you/we/they"}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* ANSWER BUTTONS */}
+        {phase === "answer" && (
+          <div style={{display:"flex", gap:"0.8rem", width:"100%", maxWidth:320}} className="fade-up">
+            <button onClick={() => choose(true)} style={{
+              flex:1, padding:"0.9rem", borderRadius:12, border:"2px solid var(--teal)",
+              background:"#edfaf6", color:"var(--teal)", fontWeight:700,
+              fontSize:"1rem", cursor:"pointer", fontFamily:"'DM Sans',sans-serif",
+              transition:"all .15s"
+            }}>
+              ✅ Tem <strong>-s</strong>
+            </button>
+            <button onClick={() => choose(false)} style={{
+              flex:1, padding:"0.9rem", borderRadius:12, border:"2px solid var(--gold)",
+              background:"#fff8ee", color:"#a07620", fontWeight:700,
+              fontSize:"1rem", cursor:"pointer", fontFamily:"'DM Sans',sans-serif",
+              transition:"all .15s"
+            }}>
+              ❌ Sem <strong>-s</strong>
+            </button>
+          </div>
+        )}
+
+        {/* NEXT BUTTON */}
+        {phase === "result" && (
+          <button onClick={next} style={{
+            background:"var(--ink)", color:"#fff", border:"none", borderRadius:10,
+            padding:"0.7rem 2rem", fontFamily:"'DM Sans',sans-serif",
+            fontWeight:600, fontSize:"0.9rem", cursor:"pointer"
+          }} className="fade-up">
+            {current + 1 >= rounds.length ? "Ver resultado" : "Próxima →"}
+          </button>
+        )}
+
+      </div>
+
+      {/* TIP */}
+      <div style={{
+        background:"var(--cream)", borderRadius:12,
+        padding:"0.8rem 1rem", fontSize:"0.8rem",
+        color:"var(--slate)", lineHeight:1.6,
+        borderLeft:"3px solid var(--gold)"
+      }}>
+        💡 <strong>Dica:</strong> O -s final em inglês é curto e rápido. Em <em>works</em> soa como um "s" seco no final. Em <em>watches</em> soa "-iz". Tente ouvir várias vezes até seu ouvido captar a diferença.
+      </div>
+
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// ERRORS TAB
+// ─────────────────────────────────────────────
+const COMMON_ERRORS = [
+  {
+    wrong: "She work here.",
+    right: "She works here.",
+    why: "Em português o verbo não muda com ela: ela trabalha. Em inglês, com he/she/it é obrigatório adicionar -s ou -es.",
+    highlight: "works",
+    tag: "Falta o -s",
+  },
+  {
+    wrong: "I am like pizza.",
+    right: "I like pizza.",
+    why: "Em português dizemos eu sou fã de ou eu gosto de. O cérebro traduz sou → am. Mas like já expressa o gostar — não precisa de am.",
+    highlight: "like",
+    tag: "Am/Is/Are a mais",
+  },
+  {
+    wrong: "He don't know.",
+    right: "He doesn't know.",
+    why: "Generalizamos o don't para todo mundo. Com he/she/it a forma correta é sempre doesn't, e o verbo principal fica na base (sem -s).",
+    highlight: "doesn't",
+    tag: "Don't com he/she/it",
+  },
+  {
+    wrong: "I no have a car.",
+    right: "I don't have a car.",
+    why: "Em português basta colocar não antes do verbo. Em inglês é preciso usar o auxiliar don't/doesn't para fazer a negativa.",
+    highlight: "don't have",
+    tag: "Negativa sem auxiliar",
+  },
+  {
+    wrong: "Every day she study English.",
+    right: "Every day she studies English.",
+    why: "Verbos terminados em consoante + y trocam o y por -ies com he/she/it. Study vira studies.",
+    highlight: "studies",
+    tag: "Spelling: -ies",
+  },
+  {
+    wrong: "Do she works here?",
+    right: "Does she work here?",
+    why: "Na pergunta com he/she/it usamos does. O -s sai do verbo e vai para o auxiliar. Não pode ter -s nos dois ao mesmo tempo.",
+    highlight: "Does she work",
+    tag: "Does + verbo base",
+  },
+];
+
+function ErrorCard({ item, index }) {
+  const [revealed, setRevealed] = useState(false);
+  return (
+    <div style={{
+      background:"#fff", border:"1.5px solid var(--line)",
+      borderRadius:14, overflow:"hidden",
+    }} className="fade-up">
+      <div style={{
+        background:"var(--rose)", color:"#fff",
+        fontSize:"0.68rem", fontWeight:700, letterSpacing:"0.1em",
+        textTransform:"uppercase", padding:"0.3rem 0.9rem",
+        display:"flex", alignItems:"center", gap:"0.5rem"
+      }}>
+        <span style={{opacity:0.7}}>#{index+1}</span> {item.tag}
+      </div>
+      <div style={{padding:"1rem 1.2rem", display:"flex", flexDirection:"column", gap:"0.75rem"}}>
+        <div>
+          <p style={{fontSize:"0.65rem", fontWeight:700, letterSpacing:"0.1em", color:"var(--rose)", textTransform:"uppercase", marginBottom:"0.25rem"}}>❌ Erro comum</p>
+          <div style={{
+            background:"#fdf0ef", border:"1.5px solid #f5c5c3",
+            borderRadius:9, padding:"0.6rem 0.9rem",
+            fontFamily:"'Playfair Display', serif", fontSize:"1rem", color:"#8b2e2a",
+            textDecoration:"line-through", textDecorationColor:"var(--rose)",
+            textDecorationThickness:2
+          }}>
+            {item.wrong}
+          </div>
+        </div>
+        <div>
+          <p style={{fontSize:"0.65rem", fontWeight:700, letterSpacing:"0.1em", color:"var(--teal)", textTransform:"uppercase", marginBottom:"0.25rem"}}>✅ Forma correta</p>
+          <div style={{
+            background:"#edfaf6", border:"1.5px solid #a8e6d8",
+            borderRadius:9, padding:"0.6rem 0.9rem",
+            fontFamily:"'Playfair Display', serif", fontSize:"1rem", color:"var(--ink)",
+            fontWeight:600
+          }}>
+            {item.right.split(item.highlight).map((part, i, arr) => (
+              <span key={i}>
+                {part}
+                {i < arr.length - 1 && (
+                  <span style={{
+                    background:"var(--teal2)", color:"#fff",
+                    borderRadius:5, padding:"0 0.3rem", margin:"0 0.1rem",
+                    fontWeight:800
+                  }}>{item.highlight}</span>
+                )}
+              </span>
+            ))}
+          </div>
+        </div>
+        <button
+          onClick={() => setRevealed(v => !v)}
+          style={{
+            background: revealed ? "var(--cream)" : "transparent",
+            border:"1.5px solid var(--line)", borderRadius:9,
+            padding:"0.55rem 0.9rem", cursor:"pointer",
+            fontFamily:"'DM Sans',sans-serif", fontSize:"0.82rem",
+            color:"var(--slate)", textAlign:"left", transition:"background .2s",
+            display:"flex", alignItems:"center", justifyContent:"space-between", gap:"0.5rem"
+          }}
+        >
+          <span>💡 {revealed ? "Fechar explicação" : "Por que esse erro acontece?"}</span>
+          <span style={{fontSize:"0.75rem", display:"inline-block", transform: revealed ? "rotate(180deg)" : "none"}}>▼</span>
+        </button>
+        {revealed && (
+          <div style={{
+            background:"var(--cream)", borderRadius:9, padding:"0.75rem 0.9rem",
+            fontSize:"0.85rem", color:"var(--ink)", lineHeight:1.6,
+            borderLeft:"3px solid var(--gold)"
+          }} className="fade-up">
+            {item.why}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ErrorsTab() {
+  return (
+    <div style={{display:"flex", flexDirection:"column", gap:"1rem"}}>
+      <div style={{
+        background:"linear-gradient(135deg, #fff8ee, #fff3f3)",
+        border:"1.5px solid #f5ddc3", borderRadius:14,
+        padding:"1rem 1.2rem", display:"flex", gap:"0.8rem", alignItems:"flex-start"
+      }}>
+        <span style={{fontSize:"1.6rem", lineHeight:1}}>🇧🇷</span>
+        <div>
+          <p style={{fontWeight:700, fontSize:"0.9rem", marginBottom:"0.25rem"}}>Erros típicos de brasileiros</p>
+          <p style={{fontSize:"0.82rem", color:"var(--slate)", lineHeight:1.5}}>
+            Esses erros acontecem porque o português funciona diferente do inglês. Reconhecer o padrão é o primeiro passo para não repetir!
+          </p>
+        </div>
+      </div>
+      {COMMON_ERRORS.map((item, i) => (
+        <ErrorCard key={i} item={item} index={i}/>
+      ))}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// EXAMPLES TAB
+// ─────────────────────────────────────────────
+function ExamplesTab({ playing, play }) {
+  return (
+    <div style={{display:"flex", flexDirection:"column", gap:"1.4rem"}}>
+      <div>
+        <p className="section-label" style={{marginBottom:"0.55rem"}}>✅ Affirmative sentences</p>
+        <div style={{display:"flex", flexDirection:"column", gap:"0.55rem"}}>
+          {AFFIRMATIVE.map(item => <ExCard key={item.id} item={item} playing={playing} play={play}/>)}
+        </div>
+      </div>
+      <div>
+        <p className="section-label" style={{marginBottom:"0.55rem"}}>❌ Negative sentences</p>
+        <div style={{display:"flex", flexDirection:"column", gap:"0.55rem"}}>
+          {NEGATIVE.map(item => <ExCard key={item.id} item={item} playing={playing} play={play}/>)}
+        </div>
+      </div>
+      <div>
+        <p className="section-label" style={{marginBottom:"0.55rem"}}>❓ Questions</p>
+        <div style={{display:"flex", flexDirection:"column", gap:"0.55rem"}}>
+          {QUESTIONS.map(item => <ExCard key={item.id} item={item} playing={playing} play={play}/>)}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// VERBS TAB
+// ─────────────────────────────────────────────
+function VerbsTab({ playing, play }) {
+  return (
+    <div style={{display:"flex", flexDirection:"column", gap:"1.4rem"}}>
+      <div>
+        <p className="section-label" style={{marginBottom:"0.55rem"}}>Common verbs — conjugation table</p>
+        <div style={{borderRadius:12, overflow:"hidden", border:"1.5px solid var(--line)"}}>
+          <table className="verb-table">
+            <thead>
+              <tr>
+                <th>Base form</th>
+                <th>He / She / It</th>
+                <th>Negative</th>
+                <th>PT</th>
+              </tr>
+            </thead>
+            <tbody>
+              {VERBS.map(v => (
+                <tr key={v.base}>
+                  <td style={{fontWeight:600, color:"var(--teal)"}}>{v.base}</td>
+                  <td style={{fontWeight:600, color:"var(--gold)"}}>{v.he}</td>
+                  <td style={{color:"var(--rose)", fontSize:"0.83rem"}}>{v.neg}</td>
+                  <td style={{color:"var(--slate)", fontSize:"0.82rem"}}>{v.pt}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div>
+        <p className="section-label" style={{marginBottom:"0.55rem"}}>Listen — more examples</p>
+        <div style={{display:"flex", flexDirection:"column", gap:"0.55rem"}}>
+          {[...AFFIRMATIVE.slice(4), ...NEGATIVE.slice(2)].map(item => (
+            <ExCard key={item.id} item={item} playing={playing} play={play}/>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// QUIZ TAB
+// ─────────────────────────────────────────────
+function QuizTab() {
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [score, setScore] = useState(0);
+  const [done, setDone] = useState(false);
+  const [answers, setAnswers] = useState([]);
+
+  const q = QUIZ[current];
+  const progress = ((current) / QUIZ.length) * 100;
+
+  function choose(idx) {
+    if (selected !== null) return;
+    setSelected(idx);
+    const correct = idx === q.ans;
+    if (correct) { setScore(s => s + 1); sfx.correct(); }
+    else { sfx.wrong(); }
+    setAnswers(a => [...a, { correct }]);
+    setTimeout(() => {
+      if (current + 1 >= QUIZ.length) { setDone(true); sfx.complete(); }
+      else { setCurrent(c => c + 1); setSelected(null); }
+    }, 1400);
+  }
+
+  function reset() {
+    setCurrent(0); setSelected(null); setScore(0); setDone(false); setAnswers([]);
+  }
+
+  if (done) {
+    const pct = Math.round((score / QUIZ.length) * 100);
+    return (
+      <div style={{textAlign:"center", padding:"2rem 1rem"}} className="fade-up">
+        <div style={{fontSize:"3.5rem", marginBottom:"0.5rem"}}>
+          {pct === 100 ? "🏆" : pct >= 60 ? "🎯" : "💪"}
+        </div>
+        <p className="display" style={{fontSize:"2rem", fontWeight:900}}>{score}/{QUIZ.length}</p>
+        <p style={{color:"var(--slate)", marginTop:"0.3rem", marginBottom:"1.5rem"}}>{pct}% correct</p>
+        <div style={{display:"flex", gap:"0.5rem", justifyContent:"center", marginBottom:"1.5rem"}}>
+          {answers.map((a, i) => (
+            <span key={i} style={{
+              width:32, height:32, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center",
+              background: a.correct ? "var(--teal)" : "var(--rose)", color:"#fff", fontSize:"0.85rem", fontWeight:700
+            }}>{a.correct ? "✓" : "✗"}</span>
+          ))}
+        </div>
+        <button onClick={reset} style={{
+          background:"var(--ink)", color:"#fff", border:"none", borderRadius:10,
+          padding:"0.75rem 2rem", fontFamily:"'DM Sans',sans-serif", fontWeight:600, fontSize:"0.9rem", cursor:"pointer"
+        }}>Try again</button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{display:"flex", flexDirection:"column", gap:"1.2rem"}}>
+      <div>
+        <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:"0.5rem"}}>
+          <p className="section-label">Question {current+1} of {QUIZ.length}</p>
+          <span style={{fontSize:"0.8rem", color:"var(--slate)"}}>Score: {score}</span>
+        </div>
+        <div className="prog-bar"><div className="prog-fill" style={{width:`${progress}%`}}/></div>
+      </div>
+
+      <div style={{background:"var(--cream)", borderRadius:14, padding:"1.2rem 1.4rem"}} className="fade-up" key={current}>
+        <p style={{fontSize:"1.05rem", fontWeight:600, lineHeight:1.5}}>
+          {q.q.split("___").map((part, i, arr) => (
+            <span key={i}>{part}{i < arr.length-1 && (
+              <span style={{
+                display:"inline-block", minWidth:60, borderBottom:"2.5px solid var(--ink)",
+                margin:"0 0.3rem", textAlign:"center", color:"transparent"
+              }}>____</span>
+            )}</span>
+          ))}
+        </p>
+      </div>
+
+      <div style={{display:"flex", flexDirection:"column", gap:"0.55rem"}}>
+        {q.opts.map((opt, idx) => {
+          let cls = "quiz-opt";
+          if (selected !== null) {
+            if (idx === q.ans) cls += " correct";
+            else if (idx === selected && selected !== q.ans) cls += " wrong";
+          }
+          return (
+            <button key={idx} className={cls} onClick={() => choose(idx)} disabled={selected !== null}>
+              <span style={{
+                display:"inline-block", width:24, height:24, borderRadius:"50%",
+                background:"var(--line)", color:"var(--slate)",
+                fontSize:"0.72rem", fontWeight:700, textAlign:"center", lineHeight:"24px",
+                marginRight:"0.7rem", flexShrink:0
+              }}>{String.fromCharCode(65+idx)}</span>
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+
+      {selected !== null && (
+        <div style={{
+          background: selected === q.ans ? "#edfaf6" : "#fdf0ef",
+          border: `1.5px solid ${selected === q.ans ? "var(--teal2)" : "var(--rose)"}`,
+          borderRadius:12, padding:"0.9rem 1.1rem", fontSize:"0.85rem", lineHeight:1.5
+        }} className="fade-up">
+          <span style={{fontWeight:700, color: selected === q.ans ? "var(--teal)" : "var(--rose)"}}>
+            {selected === q.ans ? "✓ Correct! " : "✗ Not quite. "}
+          </span>
+          {q.tip}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// APP
+// ─────────────────────────────────────────────
+function App() {
+  const [tab, setTab] = useState("explain");
+  const { playing, play } = useAudio();
+
+  const content = {
+    explain:   <ExplainTab   playing={playing} play={play}/>,
+    examples:  <ExamplesTab  playing={playing} play={play}/>,
+    verbs:     <VerbsTab     playing={playing} play={play}/>,
+    errors:    <ErrorsTab/>,
+    listening: <ListeningTab/>,
+    quiz:      <QuizTab/>,
+  };
+
+  return (
+    <div style={{maxWidth:640, margin:"0 auto", padding:"1.2rem 1rem 3rem"}}>
+
+      {/* HEADER */}
+      <div style={{marginBottom:"1.4rem"}}>
+        <p className="section-label" style={{marginBottom:"0.25rem"}}>Grammar Lesson</p>
+        <h1 className="display" style={{fontSize:"clamp(2rem,6vw,2.8rem)", fontWeight:900, lineHeight:1.1, color:"var(--ink)"}}>
+          Simple<br/>Present
+        </h1>
+        <p style={{color:"var(--slate)", fontSize:"0.85rem", marginTop:"0.4rem"}}>
+          Habits · Facts · Routines · Likes
+        </p>
+      </div>
+
+      {/* TABS */}
+      <div style={{
+        display:"flex", gap:"0.35rem", flexWrap:"wrap",
+        background:"var(--cream)", borderRadius:999, padding:"0.3rem",
+        marginBottom:"1.4rem"
+      }}>
+        {TABS.map(t => (
+          <button key={t.id} className={`tab-btn ${tab===t.id?"active":""}`} onClick={() => setTab(t.id)}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {/* CONTENT */}
+      <div key={tab} className="fade-up">
+        {content[tab]}
+      </div>
+
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
